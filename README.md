@@ -1,16 +1,16 @@
 # app-starter
+
 > Built with [Elm Land](https://elm.land) 🌈
 
-## Local development
+## dev
 
 ```bash
 # Requires Node.js v18+ (https://nodejs.org)
-npx elm-land server
+bun run dev
+# or
+npm run dev
 ```
 
-## Deploying to production
+## prod
 
-Elm Land projects are most commonly deployed as static websites. 
-
-Please visit [the "Deployment" guide](https://elm.land/guide/deploying) to learn more
-about deploying your app for free using Netlify or Vercel.
+Elm Land projects are most commonly [deployed](https://elm.land/guide/deploying) as static websites.

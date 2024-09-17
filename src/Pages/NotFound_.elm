@@ -1,7 +1,8 @@
 module Pages.NotFound_ exposing (Model, Msg, page)
 
 import Effect exposing (Effect)
-import Html exposing (..)
+import Element exposing (..)
+import Layouts
 import Page exposing (Page)
 import Route exposing (Route)
 import Route.Path
@@ -17,6 +18,7 @@ page shared route =
         , subscriptions = subscriptions
         , view = view
         }
+        |> Page.withLayout (\model -> Layouts.Guest {})
 
 
 
@@ -66,4 +68,21 @@ subscriptions model =
 
 view : Model -> View Msg
 view model =
-    View.fromString "Page not found"
+    let
+        _ =
+            Debug.log "" (Debug.toString <| Route.Path.href Route.Path.Home_)
+    in
+    { title = "404"
+    , attributes = []
+    , element =
+        column []
+            [ row [] [ text "404" ]
+            , row [] [ text "Page not found" ]
+            , row []
+                [ link []
+                    { url = Route.Path.toString Route.Path.Home_
+                    , label = text "Back to homepage"
+                    }
+                ]
+            ]
+    }

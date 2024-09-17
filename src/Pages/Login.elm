@@ -1,7 +1,6 @@
-module Pages.Home_ exposing (Model, Msg, page)
+module Pages.Login exposing (Model, Msg, page)
 
 import Effect exposing (Effect)
-import Element exposing (..)
 import Layouts
 import Page exposing (Page)
 import Route exposing (Route)
@@ -67,7 +66,4 @@ subscriptions model =
 
 view : Model -> View Msg
 view model =
-    { title = "Homepage"
-    , attributes = []
-    , element = column [] [ text "Pages.Home_" ]
-    }
+    View.fromString "Pages.Login"
