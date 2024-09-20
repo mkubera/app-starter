@@ -9,18 +9,23 @@ import View exposing (View)
 
 
 type alias User =
-    {}
+    { token : String }
 
 
 {-| Called before an auth-only page is loaded.
 -}
 onPageLoad : Shared.Model -> Route () -> Auth.Action.Action User
 onPageLoad shared route =
-    Auth.Action.pushRoute
-        { path = Route.Path.NotFound_
-        , query = Dict.empty
-        , hash = Nothing
-        }
+    case shared.token of
+        Just token ->
+            Auth.Action.loadPageWithUser { token = token }
+
+        Nothing ->
+            Auth.Action.pushRoute
+                { path = Route.Path.Login
+                , query = Dict.fromList [ ( "from", route.url.path ) ]
+                , hash = Nothing
+                }
 
 
 {-| Renders whenever `Auth.Action.loadCustomPage` is returned from `onPageLoad`.

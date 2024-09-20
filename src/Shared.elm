@@ -12,6 +12,7 @@ module Shared exposing
 
 -}
 
+import Dict
 import Effect exposing (Effect)
 import Json.Decode
 import Route exposing (Route)
@@ -25,12 +26,13 @@ import Shared.Msg
 
 
 type alias Flags =
-    {}
+    { apiUrl : String }
 
 
 decoder : Json.Decode.Decoder Flags
 decoder =
-    Json.Decode.succeed {}
+    Json.Decode.map Flags
+        (Json.Decode.field "apiUrl" Json.Decode.string)
 
 
 
@@ -43,9 +45,22 @@ type alias Model =
 
 init : Result Json.Decode.Error Flags -> Route () -> ( Model, Effect Msg )
 init flagsResult route =
-    ( {}
-    , Effect.none
-    )
+    case flagsResult of
+        Ok { apiUrl } ->
+            ( { token = Nothing
+              , user = Nothing
+              , apiUrl = apiUrl
+              }
+            , Effect.none
+            )
+
+        Err err ->
+            ( { token = Nothing
+              , user = Nothing
+              , apiUrl = ""
+              }
+            , Effect.none
+            )
 
 
 
@@ -59,9 +74,28 @@ type alias Msg =
 update : Route () -> Msg -> Model -> ( Model, Effect Msg )
 update route msg model =
     case msg of
-        Shared.Msg.NoOp ->
-            ( model
-            , Effect.none
+        Shared.Msg.Login { token, user } ->
+            ( { model
+                | token = Just token
+                , user = Just user
+              }
+            , Effect.pushRoute
+                { path = Route.Path.User_Profile
+                , query = Dict.empty
+                , hash = Nothing
+                }
+            )
+
+        Shared.Msg.Logout ->
+            ( { model
+                | token = Nothing
+                , user = Nothing
+              }
+            , Effect.pushRoute
+                { path = Route.Path.Home_
+                , query = Dict.empty
+                , hash = Nothing
+                }
             )
 
 

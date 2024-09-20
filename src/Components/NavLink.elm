@@ -25,5 +25,11 @@ view routePath =
                 , label = text "Login"
                 }
 
+        User_Profile ->
+            link []
+                { url = Route.Path.toString Route.Path.User_Profile
+                , label = text "Profile"
+                }
+
         _ ->
             none

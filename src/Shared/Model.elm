@@ -1,4 +1,4 @@
-module Shared.Model exposing (Model)
+module Shared.Model exposing (..)
 
 {-| -}
 
@@ -10,5 +10,14 @@ For that reason, both `Shared.Model` and `Shared.Msg` are in their
 own file, so they can be imported by `Effect.elm`
 
 -}
+type alias User =
+    { id : Int
+    , email : String
+    }
+
+
 type alias Model =
-    {}
+    { token : Maybe String
+    , user : Maybe User
+    , apiUrl : String
+    }

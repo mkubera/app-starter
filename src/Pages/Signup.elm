@@ -1,19 +1,33 @@
 module Pages.Signup exposing (Model, Msg, page)
 
+import Api.Signup exposing (ResponseData)
+import Components.Form
+import Components.Form.Input exposing (Field(..))
+import Components.Form.SubmitBtn
+import Dict
 import Effect exposing (Effect)
+import Element exposing (..)
+import Element.Background as Background
+import Element.Border as Border
+import Element.Font as Font
+import FlatColors.TurkishPalette as Colors
 import Html
+import Http
 import Layouts
 import Page exposing (Page)
 import Route exposing (Route)
+import Route.Path
 import Shared
+import Shared.Model
+import Utils
 import View exposing (View)
 
 
 page : Shared.Model -> Route () -> Page Model Msg
-page shared route =
+page sharedModel route =
     Page.new
         { init = init
-        , update = update
+        , update = update sharedModel
         , subscriptions = subscriptions
         , view = view
         }
@@ -25,12 +39,28 @@ page shared route =
 
 
 type alias Model =
-    {}
+    { email : String
+    , password : String
+    , password2 : String
+    , emailNotification : Result String String
+    , passwordNotification : Result String String
+    , password2Notification : Result String String
+    , isSubmitting : Bool
+    , errorNotification : Maybe String
+    }
 
 
 init : () -> ( Model, Effect Msg )
 init () =
-    ( {}
+    ( { email = ""
+      , password = ""
+      , password2 = ""
+      , emailNotification = Err ""
+      , passwordNotification = Err ""
+      , password2Notification = Err ""
+      , isSubmitting = False
+      , errorNotification = Nothing
+      }
     , Effect.none
     )
 
@@ -40,16 +70,91 @@ init () =
 
 
 type Msg
-    = NoOp
+    = SaveEmail String
+    | SavePassword String
+    | SavePassword2 String
+    | Submit
+    | ApiResponse (Result Http.Error ResponseData)
 
 
-update : Msg -> Model -> ( Model, Effect Msg )
-update msg model =
+update : Shared.Model.Model -> Msg -> Model -> ( Model, Effect Msg )
+update sharedModel msg model =
     case msg of
-        NoOp ->
-            ( model
+        SaveEmail string ->
+            ( { model
+                | email = string
+                , emailNotification =
+                    if String.contains "@" string && String.contains "." string then
+                        Err "Email must contain '@' and '.' characters."
+
+                    else
+                        Ok "Ok 👌"
+              }
             , Effect.none
             )
+
+        SavePassword string ->
+            ( { model
+                | password = string
+                , passwordNotification =
+                    if
+                        (String.length string < 8)
+                            || (string /= model.password2)
+                    then
+                        Err "Password must be at least 8 characters long. Both passwords must be the same."
+
+                    else
+                        Ok "Ok 👌"
+              }
+            , Effect.none
+            )
+
+        SavePassword2 string ->
+            ( { model
+                | password2 = string
+                , password2Notification =
+                    if
+                        (String.length string < 8)
+                            || (string /= model.password)
+                    then
+                        Err "Password must be at least 8 characters long. Both passwords must be the same."
+
+                    else
+                        Ok "Ok 👌"
+              }
+            , Effect.none
+            )
+
+        Submit ->
+            ( { model | isSubmitting = True }
+            , Api.Signup.post
+                { onResponse = ApiResponse
+                , email = model.email
+                , apiUrl = sharedModel.apiUrl
+                }
+            )
+
+        ApiResponse (Ok _) ->
+            ( { model
+                | errorNotification = Nothing
+                , isSubmitting = False
+              }
+            , Effect.pushRoute
+                { path = Route.Path.Login
+                , query = Dict.empty
+                , hash = Nothing
+                }
+            )
+
+        ApiResponse (Err err) ->
+            case err of
+                _ ->
+                    ( { model
+                        | errorNotification = Just "Something went wrong. Please try again."
+                        , isSubmitting = False
+                      }
+                    , Effect.none
+                    )
 
 
 
@@ -67,4 +172,69 @@ subscriptions model =
 
 view : Model -> View Msg
 view model =
-    View.fromString "Pages.Signup"
+    { title = "Signup"
+    , attributes = []
+    , element =
+        column [ centerX, centerY ]
+            [ Components.Form.init
+                { element = column
+                , attributes =
+                    [ width (px 600)
+                    , spacing 10
+                    ]
+                , children =
+                    [ row
+                        [ Font.size 22
+                        , centerX
+                        ]
+                        [ text "SIGNUP" ]
+
+                    -- , row
+                    --     [ centerX
+                    --     , Font.color Colors.shadowedSteel
+                    --     , Font.italic
+                    --     , Font.size 14
+                    --     , Utils.paddingBottom 20
+                    --     ]
+                    --     [ text "Fields marked * are required." ]
+                    -- EMAIL
+                    , Components.Form.Input.init
+                        { field = Email
+
+                        -- , labelText = "email*"
+                        , labelText = "email"
+                        , attributes = []
+                        , value = model.email
+                        , msg = SaveEmail
+                        }
+                    , Components.Form.viewNotification model.emailNotification
+
+                    -- PASSWORD
+                    -- , Components.Form.Input.init
+                    --     { field = NewPassword
+                    --     , labelText = "password*"
+                    --     , attributes = []
+                    --     , value = model.password
+                    --     , msg = SavePassword
+                    --     }
+                    -- , Components.Form.viewNotification model.passwordNotification
+                    -- -- PASSWORD2
+                    -- , Components.Form.Input.init
+                    --     { field = NewPassword
+                    --     , labelText = "password (repeat)*"
+                    --     , attributes = []
+                    --     , value = model.password2
+                    --     , msg = SavePassword2
+                    --     }
+                    -- , Components.Form.viewNotification model.password2Notification
+                    -- SUBMIT
+                    , Components.Form.SubmitBtn.init
+                        { labelText = "Continue"
+                        , attributes = []
+                        , maybeMsg = Nothing
+                        , isSubmitting = model.isSubmitting
+                        }
+                    ]
+                }
+            ]
+    }

@@ -1,9 +1,10 @@
-module Layouts.Guest exposing (Model, Msg, Props, layout)
+module Layouts.User exposing (Model, Msg, Props, layout)
 
 import Components.NavLink
 import Effect exposing (Effect)
 import Element exposing (..)
 import Element.Background as Background
+import Element.Input exposing (button)
 import Layout exposing (Layout)
 import Route exposing (Route)
 import Route.Path
@@ -45,15 +46,15 @@ init _ =
 
 
 type Msg
-    = ReplaceMe
+    = Logout
 
 
 update : Msg -> Model -> ( Model, Effect Msg )
 update msg model =
     case msg of
-        ReplaceMe ->
+        Logout ->
             ( model
-            , Effect.none
+            , Effect.logout
             )
 
 
@@ -73,12 +74,13 @@ view { toContentMsg, model, content } =
     , element =
         column [ width fill, height fill ]
             [ viewNavbar model
+                |> Element.map toContentMsg
             , row [ centerX, centerY ] [ content.element ]
             ]
     }
 
 
-viewNavbar : Model -> Element msg
+viewNavbar : Model -> Element Msg
 viewNavbar model =
     row
         [ spaceEvenly
@@ -88,8 +90,7 @@ viewNavbar model =
         ]
         [ row [] [ text "App Starter logo" ]
         , row [ spacing 20 ]
-            [ Components.NavLink.view Route.Path.Home_
-            , Components.NavLink.view Route.Path.Signup
-            , Components.NavLink.view Route.Path.Login
+            [ Components.NavLink.view Route.Path.User_Profile
+            , button [] { onPress = Just Logout, label = text "Logout" }
             ]
         ]

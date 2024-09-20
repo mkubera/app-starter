@@ -6,6 +6,7 @@ module Effect exposing
     , pushRoutePath, replaceRoutePath
     , loadExternalUrl, back
     , map, toCmd
+    , login, logout
     )
 
 {-|
@@ -45,6 +46,21 @@ type Effect msg
     | Back
       -- SHARED
     | SendSharedMsg Shared.Msg.Msg
+
+
+
+-- ADDED
+
+
+login : { token : String, user : Shared.Model.User } -> Effect msg
+login data =
+    SendSharedMsg (Shared.Msg.Login data)
+
+
+logout : Effect msg
+logout =
+    SendSharedMsg Shared.Msg.Logout
+
 
 
 
