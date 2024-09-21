@@ -35,7 +35,7 @@ post { onResponse, email, apiUrl } =
         cmd : Cmd msg
         cmd =
             Http.post
-                { url = apiUrl ++ "/users/login"
+                { url = apiUrl ++ "/users/signup"
                 , body = Http.jsonBody encodedBody
                 , expect = Http.expectJson onResponse responseDecoder
                 }

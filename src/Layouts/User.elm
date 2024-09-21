@@ -31,12 +31,14 @@ layout props shared route =
 
 
 type alias Model =
-    {}
+    { errorNotification : Maybe String
+    }
 
 
 init : () -> ( Model, Effect Msg )
 init _ =
-    ( {}
+    ( { errorNotification = Nothing
+      }
     , Effect.none
     )
 
@@ -47,6 +49,9 @@ init _ =
 
 type Msg
     = Logout
+      -- TODO: move to Top/Main Layout (Nested Layouts)
+    | SetErrorNotification String
+    | ClearErrorNotification
 
 
 update : Msg -> Model -> ( Model, Effect Msg )
@@ -55,6 +60,16 @@ update msg model =
         Logout ->
             ( model
             , Effect.logout
+            )
+
+        SetErrorNotification string ->
+            ( { model | errorNotification = Just string }
+            , Effect.none
+            )
+
+        ClearErrorNotification ->
+            ( { model | errorNotification = Nothing }
+            , Effect.none
             )
 
 

@@ -48,7 +48,7 @@ type alias Model =
 
 init : () -> ( Model, Effect Msg )
 init () =
-    ( { email = ""
+    ( { email = "user@world.free"
       , password = ""
       , emailNotification = Err ""
       , passwordNotification = Err ""
@@ -100,7 +100,10 @@ update sharedModel msg model =
             )
 
         Submit ->
-            ( { model | isSubmitting = True }
+            ( { model
+                | isSubmitting = True
+                , errorNotification = Nothing
+              }
             , Api.Login.post
                 { onResponse = ApiResponse
                 , email = model.email

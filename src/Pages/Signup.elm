@@ -52,7 +52,7 @@ type alias Model =
 
 init : () -> ( Model, Effect Msg )
 init () =
-    ( { email = ""
+    ( { email = "user@world.free"
       , password = ""
       , password2 = ""
       , emailNotification = Err ""
@@ -71,8 +71,8 @@ init () =
 
 type Msg
     = SaveEmail String
-    | SavePassword String
-    | SavePassword2 String
+      -- | SavePassword String
+      -- | SavePassword2 String
     | Submit
     | ApiResponse (Result Http.Error ResponseData)
 
@@ -85,48 +85,47 @@ update sharedModel msg model =
                 | email = string
                 , emailNotification =
                     if String.contains "@" string && String.contains "." string then
+                        Ok "Ok 👌"
+
+                    else
                         Err "Email must contain '@' and '.' characters."
-
-                    else
-                        Ok "Ok 👌"
               }
             , Effect.none
             )
 
-        SavePassword string ->
-            ( { model
-                | password = string
-                , passwordNotification =
-                    if
-                        (String.length string < 8)
-                            || (string /= model.password2)
-                    then
-                        Err "Password must be at least 8 characters long. Both passwords must be the same."
-
-                    else
-                        Ok "Ok 👌"
-              }
-            , Effect.none
-            )
-
-        SavePassword2 string ->
-            ( { model
-                | password2 = string
-                , password2Notification =
-                    if
-                        (String.length string < 8)
-                            || (string /= model.password)
-                    then
-                        Err "Password must be at least 8 characters long. Both passwords must be the same."
-
-                    else
-                        Ok "Ok 👌"
-              }
-            , Effect.none
-            )
-
+        -- SavePassword string ->
+        --     ( { model
+        --         | password = string
+        --         , passwordNotification =
+        --             if
+        --                 (String.length string < 8)
+        --                     || (string /= model.password2)
+        --             then
+        --                 Err "Password must be at least 8 characters long. Both passwords must be the same."
+        --             else
+        --                 Ok "Ok 👌"
+        --       }
+        --     , Effect.none
+        --     )
+        -- SavePassword2 string ->
+        --     ( { model
+        --         | password2 = string
+        --         , password2Notification =
+        --             if
+        --                 (String.length string < 8)
+        --                     || (string /= model.password)
+        --             then
+        --                 Err "Password must be at least 8 characters long. Both passwords must be the same."
+        --             else
+        --                 Ok "Ok 👌"
+        --       }
+        --     , Effect.none
+        --     )
         Submit ->
-            ( { model | isSubmitting = True }
+            ( { model
+                | isSubmitting = True
+                , errorNotification = Nothing
+              }
             , Api.Signup.post
                 { onResponse = ApiResponse
                 , email = model.email
@@ -183,7 +182,8 @@ view model =
                     , spacing 10
                     ]
                 , children =
-                    [ row
+                    [ viewErrorNotification model.errorNotification
+                    , row
                         [ Font.size 22
                         , centerX
                         ]
@@ -231,10 +231,20 @@ view model =
                     , Components.Form.SubmitBtn.init
                         { labelText = "Continue"
                         , attributes = []
-                        , maybeMsg = Nothing
+                        , maybeMsg = Just Submit
                         , isSubmitting = model.isSubmitting
                         }
                     ]
                 }
             ]
     }
+
+
+viewErrorNotification : Maybe String -> Element msg
+viewErrorNotification mbErrorNotification =
+    case mbErrorNotification of
+        Just err ->
+            row [ Background.color Colors.redOrange, width fill, padding 10 ] [ text err ]
+
+        Nothing ->
+            none
