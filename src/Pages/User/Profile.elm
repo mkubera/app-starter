@@ -32,7 +32,10 @@ type alias Model =
 init : () -> ( Model, Effect Msg )
 init () =
     ( {}
-    , Effect.none
+    , Effect.batch
+        [ Effect.clearSuccessNotification
+        , Effect.clearErrorNotification
+        ]
     )
 
 

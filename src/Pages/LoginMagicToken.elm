@@ -81,11 +81,15 @@ update sharedModel msg model =
             ( { model
                 | isSubmitting = True
               }
-            , Api.LoginMagicToken.post
-                { onResponse = ApiResponse
-                , magicToken = model.magicToken
-                , apiUrl = sharedModel.apiUrl
-                }
+            , Effect.batch
+                [ Effect.clearSuccessNotification
+                , Effect.clearErrorNotification
+                , Api.LoginMagicToken.post
+                    { onResponse = ApiResponse
+                    , magicToken = model.magicToken
+                    , apiUrl = sharedModel.apiUrl
+                    }
+                ]
             )
 
         ApiResponse (Ok { token, user }) ->
@@ -94,6 +98,8 @@ update sharedModel msg model =
               }
             , Effect.batch
                 [ Effect.clearErrorNotification
+                , Effect.saveSuccessNotification
+                    { successString = "You have successfully logged in 🤝" }
                 , Effect.login { token = token, user = user }
                 ]
             )
@@ -134,7 +140,7 @@ view model =
                 , children =
                     [ row
                         [ Font.size 22, centerX, paddingXY 0 0 ]
-                        [ text "INSERT MAGIC TOKEN" ]
+                        [ text "LOGIN (part 2/2)" ]
 
                     -- MAGIC TOKEN
                     , Components.Form.Input.init

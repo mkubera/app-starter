@@ -50,6 +50,7 @@ init flagsResult route =
             ( { token = Nothing
               , user = Nothing
               , apiUrl = apiUrl
+              , successNotification = Nothing
               , errorNotification = Nothing
               }
             , Effect.none
@@ -59,6 +60,7 @@ init flagsResult route =
             ( { token = Nothing
               , user = Nothing
               , apiUrl = ""
+              , successNotification = Nothing
               , errorNotification = Nothing
               }
             , Effect.none
@@ -100,8 +102,18 @@ update route msg model =
                 }
             )
 
-        Shared.Msg.SaveErrorNotification errString ->
-            ( { model | errorNotification = Just errString }
+        Shared.Msg.SaveSuccessNotification string ->
+            ( { model | successNotification = Just string }
+            , Effect.none
+            )
+
+        Shared.Msg.ClearSuccessNotification ->
+            ( { model | successNotification = Nothing }
+            , Effect.none
+            )
+
+        Shared.Msg.SaveErrorNotification string ->
+            ( { model | errorNotification = Just string }
             , Effect.none
             )
 

@@ -9,24 +9,15 @@ import Shared.Model
 
 
 type alias ResponseData =
-    { token : String
-    , user : Shared.Model.User
+    { msg : String
     }
 
 
 responseDecoder : D.Decoder ResponseData
 responseDecoder =
-    D.map2
+    D.map
         ResponseData
-        (D.field "token" D.string)
-        (D.field "user" userDecoder)
-
-
-userDecoder : D.Decoder Shared.Model.User
-userDecoder =
-    D.map2 Shared.Model.User
-        (D.field "id" D.int)
-        (D.field "email" D.string)
+        (D.field "msg" D.string)
 
 
 post :

@@ -110,12 +110,14 @@ update sharedModel msg model =
                 }
             )
 
-        ApiResponse (Ok { token, user }) ->
+        ApiResponse (Ok _) ->
             ( { model
                 | isSubmitting = False
               }
             , Effect.batch
                 [ Effect.clearErrorNotification
+                , Effect.saveSuccessNotification
+                    { successString = "We sent a magic token to your email address." }
                 , Effect.pushRoute
                     { path = Route.Path.LoginMagicToken
                     , query = Dict.empty
@@ -160,7 +162,7 @@ view model =
                 , children =
                     [ row
                         [ Font.size 22, centerX, paddingXY 0 0 ]
-                        [ text "LOGIN" ]
+                        [ text "LOGIN (part 1/2)" ]
 
                     -- USERNAME
                     , Components.Form.Input.init
