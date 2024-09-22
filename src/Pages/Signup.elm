@@ -30,7 +30,7 @@ page sharedModel route =
         , subscriptions = subscriptions
         , view = view
         }
-        |> Page.withLayout (\model -> Layouts.Guest {})
+        |> Page.withLayout (\model -> Layouts.Main_Guest {})
 
 
 

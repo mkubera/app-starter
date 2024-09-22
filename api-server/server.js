@@ -50,4 +50,20 @@ app.post("/api/users/magic-token", (req, res) => {
   });
 });
 
+app.put("/api/users/profile", (req, res) => {
+  wait(() => {
+    const { auth } = req.headers;
+    const token = auth.replace("bearer ", "");
+
+    if (token === TOKEN) {
+      const { email } = req.body;
+      const updatedUser = { ...USER, email };
+
+      res.status(200).json(updatedUser);
+    } else {
+      res.status(403).send();
+    }
+  });
+});
+
 app.listen(3000, () => console.log("running: 3000"));

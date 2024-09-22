@@ -73,7 +73,6 @@ view sharedModel { toContentMsg, model, content } =
     , element =
         column [ width fill, height fill ]
             [ viewErrorNotification sharedModel.errorNotification
-            , text "DEL ME"
             , content.element
             ]
     }

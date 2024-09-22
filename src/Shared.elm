@@ -2,6 +2,7 @@ module Shared exposing
     ( Flags, decoder
     , Model, Msg
     , init, update, subscriptions
+    , dummyUser
     )
 
 {-|
@@ -19,6 +20,11 @@ import Route exposing (Route)
 import Route.Path
 import Shared.Model
 import Shared.Msg
+
+
+dummyUser : Shared.Model.User
+dummyUser =
+    { id = 0, email = "" }
 
 
 
@@ -78,6 +84,17 @@ type alias Msg =
 update : Route () -> Msg -> Model -> ( Model, Effect Msg )
 update route msg model =
     case msg of
+        Shared.Msg.UpdateUser user ->
+            ( { model
+                | user = Just user
+              }
+            , Effect.batch
+                [ Effect.clearErrorNotification
+                , Effect.saveSuccessNotification
+                    { successString = "Profile update successful! 👌" }
+                ]
+            )
+
         Shared.Msg.Login { token, user } ->
             ( { model
                 | token = Just token

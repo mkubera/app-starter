@@ -13,7 +13,8 @@ own file, so they can be imported by `Effect.elm`
 
 -}
 type Msg
-    = Login { token : String, user : Shared.Model.User }
+    = UpdateUser Shared.Model.User
+    | Login { token : String, user : Shared.Model.User }
     | Logout
     | SaveSuccessNotification String
     | ClearSuccessNotification

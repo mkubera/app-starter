@@ -1,5 +1,6 @@
 module Pages.Home_ exposing (Model, Msg, page)
 
+import Components.Page.Header
 import Effect exposing (Effect)
 import Element exposing (..)
 import Layouts
@@ -7,7 +8,6 @@ import Page exposing (Page)
 import Route exposing (Route)
 import Shared
 import View exposing (View)
-import Components.Page.Header
 
 
 page : Shared.Model -> Route () -> Page Model Msg
@@ -18,7 +18,7 @@ page shared route =
         , subscriptions = subscriptions
         , view = view
         }
-        |> Page.withLayout (\model -> Layouts.Guest {})
+        |> Page.withLayout (\model -> Layouts.Main_Guest {})
 
 
 

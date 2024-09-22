@@ -1,4 +1,4 @@
-module Layouts.User exposing (Model, Msg, Props, layout)
+module Layouts.Main.User exposing (Model, Msg, Props, layout)
 
 import Api.Logout
 import Components.NavLink
@@ -10,6 +10,7 @@ import Element.Input exposing (button)
 import Html exposing (dl)
 import Http
 import Layout exposing (Layout)
+import Layouts.Main
 import Route exposing (Route)
 import Route.Path
 import Shared
@@ -25,7 +26,7 @@ layout :
     Props
     -> Shared.Model
     -> Route ()
-    -> Layout () Model Msg contentMsg
+    -> Layout Layouts.Main.Props Model Msg contentMsg
 layout props sharedModel route =
     Layout.new
         { init = init
@@ -33,6 +34,7 @@ layout props sharedModel route =
         , view = view
         , subscriptions = subscriptions
         }
+        |> Layout.withParentProps {}
 
 
 

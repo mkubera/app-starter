@@ -1,4 +1,4 @@
-module Layouts.Guest exposing (Model, Msg, Props, layout)
+module Layouts.Main.Guest exposing (Model, Msg, Props, layout)
 
 import Components.NavLink
 import Effect exposing (Effect)
@@ -20,13 +20,7 @@ layout :
     Props
     -> Shared.Model
     -> Route ()
-    -> Layout () Model Msg contentMsg
-
-
-
--- -> Layout Layouts.Main.Props Model Msg contentMsg
-
-
+    -> Layout Layouts.Main.Props Model Msg contentMsg
 layout props sharedModel route =
     Layout.new
         { init = init
@@ -34,10 +28,10 @@ layout props sharedModel route =
         , view = view
         , subscriptions = subscriptions
         }
+        |> Layout.withParentProps {}
 
 
 
--- |> Layout.withParentProps {}
 -- MODEL
 
 

@@ -7,6 +7,7 @@ module Effect exposing
     , loadExternalUrl, back
     , map, toCmd
     , clearErrorNotification, clearSuccessNotification, login, logout, saveErrorNotification, saveSuccessNotification
+    ,updateUser
     )
 
 {-|
@@ -51,6 +52,9 @@ type Effect msg
 
 -- ADDED
 
+updateUser : { user : Shared.Model.User } -> Effect msg
+updateUser {user} =
+    SendSharedMsg (Shared.Msg.UpdateUser user)
 
 login : { token : String, user : Shared.Model.User } -> Effect msg
 login data =
