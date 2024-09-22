@@ -15,3 +15,5 @@ own file, so they can be imported by `Effect.elm`
 type Msg
     = Login { token : String, user : Shared.Model.User }
     | Logout
+    | SaveErrorNotification String
+    | ClearErrorNotification

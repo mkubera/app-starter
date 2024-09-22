@@ -5,6 +5,7 @@ import Effect exposing (Effect)
 import Element exposing (..)
 import Element.Background as Background
 import Layout exposing (Layout)
+import Layouts.Main
 import Route exposing (Route)
 import Route.Path
 import Shared
@@ -15,8 +16,18 @@ type alias Props =
     {}
 
 
-layout : Props -> Shared.Model -> Route () -> Layout () Model Msg contentMsg
-layout props shared route =
+layout :
+    Props
+    -> Shared.Model
+    -> Route ()
+    -> Layout () Model Msg contentMsg
+
+
+
+-- -> Layout Layouts.Main.Props Model Msg contentMsg
+
+
+layout props sharedModel route =
     Layout.new
         { init = init
         , update = update
@@ -26,6 +37,7 @@ layout props shared route =
 
 
 
+-- |> Layout.withParentProps {}
 -- MODEL
 
 

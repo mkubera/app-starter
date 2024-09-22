@@ -11,7 +11,6 @@ import Element.Background as Background
 import Element.Border as Border
 import Element.Font as Font
 import FlatColors.TurkishPalette as Colors
-import Html
 import Http
 import Layouts
 import Page exposing (Page)
@@ -19,7 +18,6 @@ import Route exposing (Route)
 import Route.Path
 import Shared
 import Shared.Model
-import Utils
 import View exposing (View)
 
 
@@ -46,7 +44,6 @@ type alias Model =
     , passwordNotification : Result String String
     , password2Notification : Result String String
     , isSubmitting : Bool
-    , errorNotification : Maybe String
     }
 
 
@@ -59,7 +56,6 @@ init () =
       , passwordNotification = Err ""
       , password2Notification = Err ""
       , isSubmitting = False
-      , errorNotification = Nothing
       }
     , Effect.none
     )
@@ -124,7 +120,6 @@ update sharedModel msg model =
         Submit ->
             ( { model
                 | isSubmitting = True
-                , errorNotification = Nothing
               }
             , Api.Signup.post
                 { onResponse = ApiResponse
@@ -135,25 +130,25 @@ update sharedModel msg model =
 
         ApiResponse (Ok _) ->
             ( { model
-                | errorNotification = Nothing
-                , isSubmitting = False
+                | isSubmitting = False
               }
-            , Effect.pushRoute
-                { path = Route.Path.Login
-                , query = Dict.empty
-                , hash = Nothing
-                }
+            , Effect.batch
+                [ Effect.clearErrorNotification
+                , Effect.pushRoute
+                    { path = Route.Path.Login
+                    , query = Dict.empty
+                    , hash = Nothing
+                    }
+                ]
             )
 
-        ApiResponse (Err err) ->
-            case err of
-                _ ->
-                    ( { model
-                        | errorNotification = Just "Something went wrong. Please try again."
-                        , isSubmitting = False
-                      }
-                    , Effect.none
-                    )
+        ApiResponse (Err _) ->
+            ( { model
+                | isSubmitting = False
+              }
+            , Effect.saveErrorNotification
+                { errString = "Something went wrong. Please try again." }
+            )
 
 
 
@@ -182,8 +177,7 @@ view model =
                     , spacing 10
                     ]
                 , children =
-                    [ viewErrorNotification model.errorNotification
-                    , row
+                    [ row
                         [ Font.size 22
                         , centerX
                         ]
@@ -238,13 +232,3 @@ view model =
                 }
             ]
     }
-
-
-viewErrorNotification : Maybe String -> Element msg
-viewErrorNotification mbErrorNotification =
-    case mbErrorNotification of
-        Just err ->
-            row [ Background.color Colors.redOrange, width fill, padding 10 ] [ text err ]
-
-        Nothing ->
-            none

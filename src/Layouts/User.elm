@@ -1,14 +1,18 @@
 module Layouts.User exposing (Model, Msg, Props, layout)
 
+import Api.Logout
 import Components.NavLink
+import Dict
 import Effect exposing (Effect)
 import Element exposing (..)
 import Element.Background as Background
 import Element.Input exposing (button)
+import Http
 import Layout exposing (Layout)
 import Route exposing (Route)
 import Route.Path
 import Shared
+import Shared.Model
 import View exposing (View)
 
 
@@ -16,11 +20,15 @@ type alias Props =
     {}
 
 
-layout : Props -> Shared.Model -> Route () -> Layout () Model Msg contentMsg
-layout props shared route =
+layout :
+    Props
+    -> Shared.Model
+    -> Route ()
+    -> Layout () Model Msg contentMsg
+layout props sharedModel route =
     Layout.new
         { init = init
-        , update = update
+        , update = update sharedModel
         , view = view
         , subscriptions = subscriptions
         }
@@ -31,14 +39,12 @@ layout props shared route =
 
 
 type alias Model =
-    { errorNotification : Maybe String
-    }
+    { isLoggingOut : Bool }
 
 
 init : () -> ( Model, Effect Msg )
 init _ =
-    ( { errorNotification = Nothing
-      }
+    ( { isLoggingOut = False }
     , Effect.none
     )
 
@@ -49,27 +55,42 @@ init _ =
 
 type Msg
     = Logout
-      -- TODO: move to Top/Main Layout (Nested Layouts)
-    | SetErrorNotification String
-    | ClearErrorNotification
+    | ApiLogoutResponse (Result Http.Error Api.Logout.ResponseData)
 
 
-update : Msg -> Model -> ( Model, Effect Msg )
-update msg model =
+update : Shared.Model.Model -> Msg -> Model -> ( Model, Effect Msg )
+update sharedModel msg model =
     case msg of
         Logout ->
-            ( model
-            , Effect.logout
+            ( { model | isLoggingOut = True }
+            , Api.Logout.post
+                { onResponse = ApiLogoutResponse
+                , apiUrl = sharedModel.apiUrl
+                , token = sharedModel.token |> Maybe.withDefault ""
+                }
             )
 
-        SetErrorNotification string ->
-            ( { model | errorNotification = Just string }
-            , Effect.none
+        ApiLogoutResponse (Ok _) ->
+            ( { model
+                | isLoggingOut = False
+              }
+            , Effect.batch
+                [ Effect.clearErrorNotification
+                , Effect.logout
+                , Effect.pushRoute
+                    { path = Route.Path.Login
+                    , query = Dict.empty
+                    , hash = Nothing
+                    }
+                ]
             )
 
-        ClearErrorNotification ->
-            ( { model | errorNotification = Nothing }
-            , Effect.none
+        ApiLogoutResponse (Err _) ->
+            ( { model
+                | isLoggingOut = False
+              }
+            , Effect.saveErrorNotification
+                { errString = "Something went wrong. Please try again." }
             )
 
 
@@ -106,6 +127,10 @@ viewNavbar model =
         [ row [] [ text "App Starter logo" ]
         , row [ spacing 20 ]
             [ Components.NavLink.view Route.Path.User_Profile
-            , button [] { onPress = Just Logout, label = text "Logout" }
+            , if model.isLoggingOut then
+                button [ alpha 0.5 ] { onPress = Nothing, label = text "Logout" }
+
+              else
+                button [] { onPress = Just Logout, label = text "Logout" }
             ]
         ]

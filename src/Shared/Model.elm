@@ -20,4 +20,5 @@ type alias Model =
     { token : Maybe String
     , user : Maybe User
     , apiUrl : String
+    , errorNotification : Maybe String
     }

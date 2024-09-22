@@ -41,7 +41,6 @@ type alias Model =
     , password : String
     , emailNotification : Result String String
     , passwordNotification : Result String String
-    , errorNotification : Maybe String
     , isSubmitting : Bool
     }
 
@@ -52,7 +51,6 @@ init () =
       , password = ""
       , emailNotification = Err ""
       , passwordNotification = Err ""
-      , errorNotification = Nothing
       , isSubmitting = False
       }
     , Effect.none
@@ -102,7 +100,6 @@ update sharedModel msg model =
         Submit ->
             ( { model
                 | isSubmitting = True
-                , errorNotification = Nothing
               }
             , Api.Login.post
                 { onResponse = ApiResponse
@@ -113,20 +110,22 @@ update sharedModel msg model =
 
         ApiResponse (Ok { token, user }) ->
             ( { model
-                | errorNotification = Nothing
-                , isSubmitting = False
+                | isSubmitting = False
               }
-            , Effect.login { token = token, user = user }
+            , Effect.batch
+                [ Effect.clearErrorNotification
+                , Effect.login { token = token, user = user }
+                ]
             )
 
         ApiResponse (Err err) ->
             case err of
                 _ ->
                     ( { model
-                        | errorNotification = Just "Something went wrong. Please try again."
-                        , isSubmitting = False
+                        | isSubmitting = False
                       }
-                    , Effect.none
+                    , Effect.saveErrorNotification
+                        { errString = "Something went wrong. Please try again." }
                     )
 
 
@@ -149,8 +148,7 @@ view model =
     , attributes = []
     , element =
         column [ centerX, centerY ]
-            [ viewErrorNotification model.errorNotification
-            , Components.Form.init
+            [ Components.Form.init
                 { element = column
                 , attributes = [ width (px 600), spacing 10 ]
                 , children =
@@ -188,13 +186,3 @@ view model =
                 }
             ]
     }
-
-
-viewErrorNotification : Maybe String -> Element msg
-viewErrorNotification mbErrorNotification =
-    case mbErrorNotification of
-        Just err ->
-            row [ Background.color Colors.redOrange, width fill, padding 10 ] [ text err ]
-
-        Nothing ->
-            none

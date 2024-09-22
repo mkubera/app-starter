@@ -6,7 +6,7 @@ module Effect exposing
     , pushRoutePath, replaceRoutePath
     , loadExternalUrl, back
     , map, toCmd
-    , login, logout
+    , clearErrorNotification, login, logout, saveErrorNotification
     )
 
 {-|
@@ -61,6 +61,15 @@ logout : Effect msg
 logout =
     SendSharedMsg Shared.Msg.Logout
 
+
+saveErrorNotification : { errString : String } -> Effect msg
+saveErrorNotification { errString } =
+    SendSharedMsg (Shared.Msg.SaveErrorNotification errString)
+
+
+clearErrorNotification : Effect msg
+clearErrorNotification =
+    SendSharedMsg Shared.Msg.ClearErrorNotification
 
 
 

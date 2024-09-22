@@ -50,6 +50,7 @@ init flagsResult route =
             ( { token = Nothing
               , user = Nothing
               , apiUrl = apiUrl
+              , errorNotification = Nothing
               }
             , Effect.none
             )
@@ -58,6 +59,7 @@ init flagsResult route =
             ( { token = Nothing
               , user = Nothing
               , apiUrl = ""
+              , errorNotification = Nothing
               }
             , Effect.none
             )
@@ -96,6 +98,16 @@ update route msg model =
                 , query = Dict.empty
                 , hash = Nothing
                 }
+            )
+
+        Shared.Msg.SaveErrorNotification errString ->
+            ( { model | errorNotification = Just errString }
+            , Effect.none
+            )
+
+        Shared.Msg.ClearErrorNotification ->
+            ( { model | errorNotification = Nothing }
+            , Effect.none
             )
 
 
