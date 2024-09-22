@@ -1,25 +1,21 @@
-module Pages.Login exposing (Model, Msg, page)
+module Pages.LoginMagicToken exposing (Model, Msg, page)
 
-import Api.Login exposing (ResponseData)
+import Api.LoginMagicToken exposing (ResponseData)
 import Components.Form
 import Components.Form.Input exposing (Field(..))
 import Components.Form.SubmitBtn
-import Dict
 import Effect exposing (Effect)
 import Element exposing (..)
 import Element.Background as Background
 import Element.Border as Border
 import Element.Font as Font
 import FlatColors.TurkishPalette as Colors
-import Html
 import Http
 import Layouts
 import Page exposing (Page)
 import Result exposing (Result)
 import Route exposing (Route)
-import Route.Path
 import Shared
-import Utils
 import View exposing (View)
 
 
@@ -39,20 +35,16 @@ page sharedModel route =
 
 
 type alias Model =
-    { email : String
-    , password : String
-    , emailNotification : Result String String
-    , passwordNotification : Result String String
+    { magicToken : String
+    , magicTokenNotification : Result String String
     , isSubmitting : Bool
     }
 
 
 init : () -> ( Model, Effect Msg )
 init () =
-    ( { email = "user@world.free"
-      , password = ""
-      , emailNotification = Err ""
-      , passwordNotification = Err ""
+    ( { magicToken = "2MDZQR"
+      , magicTokenNotification = Err ""
       , isSubmitting = False
       }
     , Effect.none
@@ -64,8 +56,7 @@ init () =
 
 
 type Msg
-    = SaveEmail String
-    | SavePassword String
+    = SaveMagicToken String
     | Submit
     | ApiResponse (Result Http.Error ResponseData)
 
@@ -73,25 +64,12 @@ type Msg
 update : Shared.Model -> Msg -> Model -> ( Model, Effect Msg )
 update sharedModel msg model =
     case msg of
-        SaveEmail string ->
+        SaveMagicToken string ->
             ( { model
-                | email = string
-                , emailNotification =
-                    if String.contains "@" string && String.contains "." string then
-                        Err "Email must contain '@' and '.' characters."
-
-                    else
-                        Ok "Ok 👌"
-              }
-            , Effect.none
-            )
-
-        SavePassword string ->
-            ( { model
-                | password = string
-                , passwordNotification =
-                    if String.length string < 8 then
-                        Err "Password must be at least 8 characters long. Both passwords must be the same."
+                | magicToken = string
+                , magicTokenNotification =
+                    if String.length string /= 6 then
+                        Err "This does not look like one of our magic tokens."
 
                     else
                         Ok "Ok 👌"
@@ -103,9 +81,9 @@ update sharedModel msg model =
             ( { model
                 | isSubmitting = True
               }
-            , Api.Login.post
+            , Api.LoginMagicToken.post
                 { onResponse = ApiResponse
-                , email = model.email
+                , magicToken = model.magicToken
                 , apiUrl = sharedModel.apiUrl
                 }
             )
@@ -116,11 +94,7 @@ update sharedModel msg model =
               }
             , Effect.batch
                 [ Effect.clearErrorNotification
-                , Effect.pushRoute
-                    { path = Route.Path.LoginMagicToken
-                    , query = Dict.empty
-                    , hash = Nothing
-                    }
+                , Effect.login { token = token, user = user }
                 ]
             )
 
@@ -150,7 +124,7 @@ subscriptions model =
 
 view : Model -> View Msg
 view model =
-    { title = "Login"
+    { title = "Magic Token Login"
     , attributes = []
     , element =
         column [ centerX, centerY ]
@@ -160,27 +134,18 @@ view model =
                 , children =
                     [ row
                         [ Font.size 22, centerX, paddingXY 0 0 ]
-                        [ text "LOGIN" ]
+                        [ text "INSERT MAGIC TOKEN" ]
 
-                    -- USERNAME
+                    -- MAGIC TOKEN
                     , Components.Form.Input.init
-                        { field = Email
-                        , labelText = "email"
+                        { field = Text
+                        , labelText = "magic token"
                         , attributes = []
-                        , value = model.email
-                        , msg = SaveEmail
+                        , value = model.magicToken
+                        , msg = SaveMagicToken
                         }
-                    , Components.Form.viewNotification model.emailNotification
+                    , Components.Form.viewNotification model.magicTokenNotification
 
-                    -- PASSWORD
-                    -- , Components.Form.Input.init
-                    --     { field = NewPassword
-                    --     , labelText = "password"
-                    --     , attributes = []
-                    --     , value = model.password
-                    --     , msg = SavePassword
-                    --     }
-                    -- , Components.Form.viewNotification model.passwordNotification
                     -- SUBMIT
                     , Components.Form.SubmitBtn.init
                         { labelText = "Continue"
