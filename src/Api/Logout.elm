@@ -1,5 +1,6 @@
 module Api.Logout exposing (..)
 
+import Api.Headers
 import Effect exposing (Effect)
 import Http
 
@@ -12,16 +13,12 @@ post :
     -> Effect msg
 post { onResponse, apiUrl, token } =
     let
-        authHeader : Http.Header
-        authHeader =
-            Http.header "authorization" ("bearer " ++ token)
-
         cmd : Cmd msg
         cmd =
             Http.request
                 { method = "post"
                 , headers =
-                    [ authHeader
+                    [ Api.Headers.auth token
                     ]
                 , url = apiUrl ++ "/users/logout"
                 , body = Http.emptyBody

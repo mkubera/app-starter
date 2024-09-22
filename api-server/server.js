@@ -4,7 +4,9 @@ const app = express();
 
 const DUMMY_USER = { id: 0, email: "" };
 const USER = { id: 1, email: "user@world.free" };
+const TOKEN = "secret-token";
 const MAGIC_TOKEN = "2MDZQR";
+
 const wait = (fn, ms = 1000) => setTimeout(fn, ms);
 
 app.use(express.json());
@@ -21,9 +23,16 @@ app.post("/api/users/login", (req, res) => {
 
 app.post("/api/users/logout", (req, res) => {
   wait(() => {
-    req.user = null;
+    const { auth } = req.headers;
+    const token = auth.replace("bearer ", "");
 
-    res.status(200).send();
+    if (token === TOKEN) {
+      req.user = null;
+
+      res.status(200).send();
+    } else {
+      res.status(403).send();
+    }
   });
 });
 
@@ -34,7 +43,7 @@ app.post("/api/users/magic-token", (req, res) => {
     if (magicToken === MAGIC_TOKEN) {
       req.user = USER;
 
-      res.status(200).json({ token: "secret-token", user: USER });
+      res.status(200).json({ token: TOKEN, user: USER });
     } else {
       res.status(401).json({ token: "", user: DUMMY_USER });
     }
