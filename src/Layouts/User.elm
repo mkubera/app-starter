@@ -7,6 +7,7 @@ import Effect exposing (Effect)
 import Element exposing (..)
 import Element.Background as Background
 import Element.Input exposing (button)
+import Html exposing (dl)
 import Http
 import Layout exposing (Layout)
 import Route exposing (Route)
@@ -55,7 +56,7 @@ init _ =
 
 type Msg
     = Logout
-    | ApiLogoutResponse (Result Http.Error Api.Logout.ResponseData)
+    | ApiLogoutResponse (Result Http.Error ())
 
 
 update : Shared.Model.Model -> Msg -> Model -> ( Model, Effect Msg )

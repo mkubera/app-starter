@@ -2,40 +2,30 @@ module Api.Logout exposing (..)
 
 import Effect exposing (Effect)
 import Http
-import Json.Decode as D
-import Json.Encode as E
-
-
-type alias ResponseData =
-    { msg : String
-    }
-
-
-responseDecoder : D.Decoder ResponseData
-responseDecoder =
-    D.map
-        ResponseData
-        (D.field "msg" D.string)
 
 
 post :
-    { onResponse : Result Http.Error ResponseData -> msg
+    { onResponse : Result Http.Error () -> msg
     , apiUrl : String
     , token : String
     }
     -> Effect msg
 post { onResponse, apiUrl, token } =
     let
+        authHeader : Http.Header
+        authHeader =
+            Http.header "authorization" ("bearer " ++ token)
+
         cmd : Cmd msg
         cmd =
             Http.request
                 { method = "post"
                 , headers =
-                    [ Http.header "authorization" ("bearer " ++ token)
+                    [ authHeader
                     ]
                 , url = apiUrl ++ "/users/logout"
                 , body = Http.emptyBody
-                , expect = Http.expectJson onResponse responseDecoder
+                , expect = Http.expectWhatever onResponse
                 , timeout = Nothing
                 , tracker = Nothing
                 }

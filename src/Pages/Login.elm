@@ -1,9 +1,10 @@
 module Pages.Login exposing (Model, Msg, page)
 
-import Api.Login exposing (ResponseData)
+import Api.Login
 import Components.Form
 import Components.Form.Input exposing (Field(..))
 import Components.Form.SubmitBtn
+import Components.Page.Header
 import Dict
 import Effect exposing (Effect)
 import Element exposing (..)
@@ -11,7 +12,6 @@ import Element.Background as Background
 import Element.Border as Border
 import Element.Font as Font
 import FlatColors.TurkishPalette as Colors
-import Html
 import Http
 import Layouts
 import Page exposing (Page)
@@ -19,7 +19,6 @@ import Result exposing (Result)
 import Route exposing (Route)
 import Route.Path
 import Shared
-import Utils
 import View exposing (View)
 
 
@@ -67,7 +66,7 @@ type Msg
     = SaveEmail String
     | SavePassword String
     | Submit
-    | ApiResponse (Result Http.Error ResponseData)
+    | ApiResponse (Result Http.Error ())
 
 
 update : Shared.Model -> Msg -> Model -> ( Model, Effect Msg )
@@ -160,9 +159,7 @@ view model =
                 { element = column
                 , attributes = [ width (px 600), spacing 10 ]
                 , children =
-                    [ row
-                        [ Font.size 22, centerX, paddingXY 0 0 ]
-                        [ text "LOGIN (part 1/2)" ]
+                    [ Components.Page.Header.view "LOGIN (part 1/2)"
 
                     -- USERNAME
                     , Components.Form.Input.init

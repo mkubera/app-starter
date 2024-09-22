@@ -1,7 +1,9 @@
 module Pages.User.Profile exposing (Model, Msg, page)
 
 import Auth
+import Components.Page.Header
 import Effect exposing (Effect)
+import Element exposing (..)
 import Layouts
 import Page exposing (Page)
 import Route exposing (Route)
@@ -71,4 +73,10 @@ subscriptions model =
 
 view : Shared.Model.Model -> Model -> View Msg
 view sharedModel model =
-    View.fromString "Pages.Users"
+    { title = "Profile"
+    , attributes = []
+    , element =
+        row []
+            [ Components.Page.Header.view "PROFILE"
+            ]
+    }

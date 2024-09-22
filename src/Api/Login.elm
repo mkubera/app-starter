@@ -2,26 +2,12 @@ module Api.Login exposing (..)
 
 import Effect exposing (Effect)
 import Http
-import Json.Decode as D
 import Json.Encode as E
 import Shared exposing (Msg)
-import Shared.Model
-
-
-type alias ResponseData =
-    { msg : String
-    }
-
-
-responseDecoder : D.Decoder ResponseData
-responseDecoder =
-    D.map
-        ResponseData
-        (D.field "msg" D.string)
 
 
 post :
-    { onResponse : Result Http.Error ResponseData -> msg
+    { onResponse : Result Http.Error () -> msg
     , email : String
     , apiUrl : String
     }
@@ -39,7 +25,7 @@ post { onResponse, email, apiUrl } =
             Http.post
                 { url = apiUrl ++ "/users/login"
                 , body = Http.jsonBody encodedBody
-                , expect = Http.expectJson onResponse responseDecoder
+                , expect = Http.expectWhatever onResponse
                 }
     in
     Effect.sendCmd cmd

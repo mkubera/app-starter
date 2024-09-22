@@ -11,19 +11,19 @@ app.use(express.json());
 app.use(cors());
 
 app.post("/api/users/signup", (req, res) => {
-  res.status(201).json({ msg: "OK" });
+  res.status(201).send();
 });
 
 app.post("/api/users/login", (req, res) => {
   // SHOULD send MAGIC_TOKEN to USER.email here
-  res.status(200).json({ msg: "OK" });
+  res.status(200).send();
 });
 
 app.post("/api/users/logout", (req, res) => {
   wait(() => {
     req.user = null;
 
-    res.status(200).json({ msg: "OK" });
+    res.status(200).send();
   });
 });
 

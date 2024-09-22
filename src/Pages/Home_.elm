@@ -7,6 +7,7 @@ import Page exposing (Page)
 import Route exposing (Route)
 import Shared
 import View exposing (View)
+import Components.Page.Header
 
 
 page : Shared.Model -> Route () -> Page Model Msg
@@ -69,5 +70,8 @@ view : Model -> View Msg
 view model =
     { title = "Homepage"
     , attributes = []
-    , element = column [] [ text "Pages.Home_" ]
+    , element =
+        column []
+            [ Components.Page.Header.view "HOME"
+            ]
     }

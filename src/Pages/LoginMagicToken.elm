@@ -4,6 +4,7 @@ import Api.LoginMagicToken exposing (ResponseData)
 import Components.Form
 import Components.Form.Input exposing (Field(..))
 import Components.Form.SubmitBtn
+import Components.Page.Header
 import Effect exposing (Effect)
 import Element exposing (..)
 import Element.Background as Background
@@ -138,9 +139,7 @@ view model =
                 { element = column
                 , attributes = [ width (px 600), spacing 10 ]
                 , children =
-                    [ row
-                        [ Font.size 22, centerX, paddingXY 0 0 ]
-                        [ text "LOGIN (part 2/2)" ]
+                    [ Components.Page.Header.view "LOGIN (part 2/2)"
 
                     -- MAGIC TOKEN
                     , Components.Form.Input.init

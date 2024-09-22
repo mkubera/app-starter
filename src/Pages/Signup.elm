@@ -1,9 +1,10 @@
 module Pages.Signup exposing (Model, Msg, page)
 
-import Api.Signup exposing (ResponseData)
+import Api.Signup
 import Components.Form
 import Components.Form.Input exposing (Field(..))
 import Components.Form.SubmitBtn
+import Components.Page.Header
 import Dict
 import Effect exposing (Effect)
 import Element exposing (..)
@@ -70,7 +71,7 @@ type Msg
       -- | SavePassword String
       -- | SavePassword2 String
     | Submit
-    | ApiResponse (Result Http.Error ResponseData)
+    | ApiResponse (Result Http.Error ())
 
 
 update : Shared.Model.Model -> Msg -> Model -> ( Model, Effect Msg )
@@ -177,11 +178,7 @@ view model =
                     , spacing 10
                     ]
                 , children =
-                    [ row
-                        [ Font.size 22
-                        , centerX
-                        ]
-                        [ text "SIGNUP" ]
+                    [ Components.Page.Header.view "SIGNUP"
 
                     -- , row
                     --     [ centerX
