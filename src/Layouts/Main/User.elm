@@ -127,13 +127,20 @@ viewNavbar model =
         , width fill
         , padding 20
         ]
-        [ row [] [ text "App Starter logo" ]
+        [ row [] [ Components.NavLink.view Route.Path.Home_ ]
         , row [ spacing 20 ]
-            [ Components.NavLink.view Route.Path.User_Profile
+            [ Components.NavLink.view Route.Path.Items
+            , Components.NavLink.view Route.Path.User_Profile
             , if model.isLoggingOut then
-                button [ alpha 0.5 ] { onPress = Nothing, label = text "Logout" }
+                button
+                    [ alpha 0.5
+                    ]
+                    { onPress = Nothing, label = text "Logout" }
 
               else
-                button [] { onPress = Just Logout, label = text "Logout" }
+                button
+                    [ mouseOver [ alpha 0.5 ]
+                    ]
+                    { onPress = Just Logout, label = text "Logout" }
             ]
         ]

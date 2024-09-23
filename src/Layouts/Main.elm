@@ -47,6 +47,7 @@ init _ =
 
 type Msg
     = CloseErrorNotification
+    | CloseSuccessNotification
 
 
 update : Msg -> Model -> ( Model, Effect Msg )
@@ -55,6 +56,11 @@ update msg model =
         CloseErrorNotification ->
             ( model
             , Effect.clearErrorNotification
+            )
+
+        CloseSuccessNotification ->
+            ( model
+            , Effect.clearSuccessNotification
             )
 
 
@@ -73,10 +79,29 @@ view sharedModel { toContentMsg, model, content } =
     , attributes = []
     , element =
         column [ width fill, height fill ]
-            [ viewErrorNotification sharedModel.errorNotification |> Element.map toContentMsg
+            [ viewSuccessNotification sharedModel.successNotification |> Element.map toContentMsg
+            , viewErrorNotification sharedModel.errorNotification |> Element.map toContentMsg
             , content.element
             ]
     }
+
+
+viewSuccessNotification : Maybe String -> Element Msg
+viewSuccessNotification mbSuccessNotification =
+    case mbSuccessNotification of
+        Just err ->
+            row
+                [ Background.color Colors.weirdGreen
+                , width fill
+                , padding 10
+                , spaceEvenly
+                ]
+                [ text err
+                , button [] { onPress = Just CloseSuccessNotification, label = text "x" }
+                ]
+
+        Nothing ->
+            none
 
 
 viewErrorNotification : Maybe String -> Element Msg

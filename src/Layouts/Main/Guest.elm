@@ -4,6 +4,7 @@ import Components.NavLink
 import Effect exposing (Effect)
 import Element exposing (..)
 import Element.Background as Background
+import FlatColors.TurkishPalette as Colors
 import Layout exposing (Layout)
 import Layouts.Main
 import Route exposing (Route)
@@ -92,9 +93,9 @@ viewNavbar model =
         , width fill
         , padding 20
         ]
-        [ row [] [ text "App Starter logo" ]
+        [ row [] [ Components.NavLink.view Route.Path.Home_ ]
         , row [ spacing 20 ]
-            [ Components.NavLink.view Route.Path.Home_
+            [ Components.NavLink.view Route.Path.Items
             , Components.NavLink.view Route.Path.Signup
             , Components.NavLink.view Route.Path.Login
             ]
