@@ -29,7 +29,15 @@ page sharedModel route =
         , subscriptions = subscriptions
         , view = view sharedModel
         }
-        |> Page.withLayout (\model -> Layouts.Main_Guest {})
+        |> Page.withLayout
+            (\model ->
+                case sharedModel.user of
+                    Just _ ->
+                        Layouts.Main_User {}
+
+                    Nothing ->
+                        Layouts.Main_Guest {}
+            )
 
 
 

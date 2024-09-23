@@ -42,7 +42,15 @@ page sharedModel route =
         , subscriptions = subscriptions
         , view = view sharedModel routeId
         }
-        |> Page.withLayout (\model -> Layouts.Main_Guest {})
+        |> Page.withLayout
+            (\model ->
+                case sharedModel.user of
+                    Just _ ->
+                        Layouts.Main_User {}
+
+                    Nothing ->
+                        Layouts.Main_Guest {}
+            )
 
 
 
@@ -74,8 +82,7 @@ update sharedModel msg model =
     case msg of
         ApiAddToBasketResponse (Ok { id }) ->
             ( model
-            , Effect.none
-              -- , Effect.addToBasket { id = id }
+            , Effect.addToBasket { id = id }
             )
 
         ApiAddToBasketResponse (Err _) ->
@@ -89,6 +96,7 @@ update sharedModel msg model =
                 { onResponse = ApiAddToBasketResponse
                 , id = id
                 , apiUrl = sharedModel.apiUrl
+                , token = sharedModel.token |> Maybe.withDefault ""
                 }
             )
 

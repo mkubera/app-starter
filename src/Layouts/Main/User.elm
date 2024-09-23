@@ -1,5 +1,6 @@
 module Layouts.Main.User exposing (Model, Msg, Props, layout)
 
+import Api.Basket
 import Api.Logout
 import Components.NavLink
 import Dict
@@ -29,7 +30,7 @@ layout :
     -> Layout Layouts.Main.Props Model Msg contentMsg
 layout props sharedModel route =
     Layout.new
-        { init = init
+        { init = init sharedModel
         , update = update sharedModel
         , view = view
         , subscriptions = subscriptions
@@ -45,10 +46,26 @@ type alias Model =
     { isLoggingOut : Bool }
 
 
-init : () -> ( Model, Effect Msg )
-init _ =
+init : Shared.Model.Model -> () -> ( Model, Effect Msg )
+init sharedModel _ =
+    let
+        userId =
+            case sharedModel.user of
+                Just u ->
+                    u.id
+
+                Nothing ->
+                    0
+    in
     ( { isLoggingOut = False }
-    , Effect.none
+    , Effect.batch
+        [ Api.Basket.get
+            { onResponse = ApiGetBaskerResponse
+            , userId = userId
+            , apiUrl = sharedModel.apiUrl
+            , token = sharedModel.token |> Maybe.withDefault ""
+            }
+        ]
     )
 
 
@@ -59,6 +76,7 @@ init _ =
 type Msg
     = Logout
     | ApiLogoutResponse (Result Http.Error ())
+    | ApiGetBaskerResponse (Result Http.Error Api.Basket.GetBasketResponseData)
 
 
 update : Shared.Model.Model -> Msg -> Model -> ( Model, Effect Msg )
@@ -92,6 +110,19 @@ update sharedModel msg model =
             ( { model
                 | isLoggingOut = False
               }
+            , Effect.saveErrorNotification
+                { errString = "Something went wrong. Please try again." }
+            )
+
+        ApiGetBaskerResponse (Ok userBasket) ->
+            ( model
+            , Effect.batch
+                [ Effect.getBasket { userBasket = userBasket }
+                ]
+            )
+
+        ApiGetBaskerResponse (Err _) ->
+            ( model
             , Effect.saveErrorNotification
                 { errString = "Something went wrong. Please try again." }
             )
@@ -131,6 +162,7 @@ viewNavbar model =
         , row [ spacing 20 ]
             [ Components.NavLink.view Route.Path.Items
             , Components.NavLink.view Route.Path.User_Profile
+            , Components.NavLink.view Route.Path.Basket
             , if model.isLoggingOut then
                 button
                     [ alpha 0.5

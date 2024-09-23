@@ -32,4 +32,5 @@ type alias Model =
     , successNotification : Maybe String
     , errorNotification : Maybe String
     , items : List Item
+    , userBasket : List Int -- List of ItemIds
     }

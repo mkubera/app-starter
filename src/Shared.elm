@@ -2,7 +2,7 @@ module Shared exposing
     ( Flags, decoder
     , Model, Msg
     , init, update, subscriptions
-    , dummyUser
+    , dummyItem, dummyUser
     )
 
 {-|
@@ -26,6 +26,16 @@ import Shared.Msg
 dummyUser : Shared.Model.User
 dummyUser =
     { id = 0, email = "" }
+
+
+dummyItem : Shared.Model.Item
+dummyItem =
+    { id = 0
+    , name = ""
+    , price = 0
+    , qty = 0
+    , createdAt = 0
+    }
 
 
 
@@ -61,6 +71,7 @@ init flagsResult route =
             , successNotification = Nothing
             , errorNotification = Nothing
             , items = []
+            , userBasket = [] -- List of ItemIds
             }
 
         initEffects { apiUrl } =
@@ -95,6 +106,18 @@ type alias Msg =
 update : Route () -> Msg -> Model -> ( Model, Effect Msg )
 update route msg model =
     case msg of
+        Shared.Msg.SaveBasket { basket } ->
+            ( { model
+                | userBasket = basket
+              }
+            , Effect.none
+            )
+
+        Shared.Msg.AddToBasket { id } ->
+            ( { model | userBasket = id :: model.userBasket }
+            , Effect.none
+            )
+
         Shared.Msg.ApiGetItemsResponse (Ok items) ->
             ( model
             , Effect.saveItems { items = items }

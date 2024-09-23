@@ -46,5 +46,11 @@ view routePath =
                 , label = text "Profile"
                 }
 
+        Basket ->
+            link defaultAttributes
+                { url = Route.Path.toString Route.Path.Basket
+                , label = text "Basket"
+                }
+
         _ ->
             none

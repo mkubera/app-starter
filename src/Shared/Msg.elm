@@ -14,7 +14,9 @@ own file, so they can be imported by `Effect.elm`
 
 -}
 type Msg
-    = ApiGetItemsResponse (Result Http.Error (List Shared.Model.Item))
+    = SaveBasket { basket : List Int }
+    | AddToBasket { id : Int }
+    | ApiGetItemsResponse (Result Http.Error (List Shared.Model.Item))
     | SaveItems (List Shared.Model.Item)
     | UpdateUser Shared.Model.User
     | Login { token : String, user : Shared.Model.User }

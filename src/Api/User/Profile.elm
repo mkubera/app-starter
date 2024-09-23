@@ -14,12 +14,6 @@ type alias ResponseData =
 
 
 
--- responseDecoder : D.Decoder ResponseData
--- responseDecoder =
---     D.map2
---         ResponseData
---         (D.field "token" D.string)
---         (D.field "user" userDecoder)
 
 
 responseDecoder : D.Decoder ResponseData

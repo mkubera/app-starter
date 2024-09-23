@@ -6,7 +6,7 @@ module Effect exposing
     , pushRoutePath, replaceRoutePath
     , loadExternalUrl, back
     , map, toCmd
-    , clearErrorNotification, clearSuccessNotification, login, logout, saveErrorNotification, saveItems, saveSuccessNotification, updateUser
+    , addToBasket, clearErrorNotification, clearSuccessNotification, getBasket, login, logout, saveErrorNotification, saveItems, saveSuccessNotification, updateUser
     )
 
 {-|
@@ -50,6 +50,16 @@ type Effect msg
 
 
 -- ADDED
+
+
+getBasket : { userBasket : List Int } -> Effect msg
+getBasket { userBasket } =
+    SendSharedMsg (Shared.Msg.SaveBasket { basket = userBasket })
+
+
+addToBasket : { id : Int } -> Effect msg
+addToBasket { id } =
+    SendSharedMsg (Shared.Msg.AddToBasket { id = id })
 
 
 saveItems : { items : List Shared.Model.Item } -> Effect msg
