@@ -16,10 +16,20 @@ type alias User =
     }
 
 
+type alias Item =
+    { id : Int
+    , name : String
+    , price : Float
+    , qty : Int
+    , createdAt : Int
+    }
+
+
 type alias Model =
     { token : Maybe String
     , user : Maybe User
     , apiUrl : String
     , successNotification : Maybe String
     , errorNotification : Maybe String
+    , items : List Item
     }

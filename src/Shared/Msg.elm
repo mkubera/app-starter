@@ -2,6 +2,7 @@ module Shared.Msg exposing (Msg(..))
 
 {-| -}
 
+import Http
 import Shared.Model
 
 
@@ -13,7 +14,9 @@ own file, so they can be imported by `Effect.elm`
 
 -}
 type Msg
-    = UpdateUser Shared.Model.User
+    = ApiGetItemsResponse (Result Http.Error (List Shared.Model.Item))
+    | SaveItems (List Shared.Model.Item)
+    | UpdateUser Shared.Model.User
     | Login { token : String, user : Shared.Model.User }
     | Logout
     | SaveSuccessNotification String

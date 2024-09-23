@@ -1,24 +1,35 @@
 module Pages.Items exposing (Model, Msg, page)
 
+import Api.Items
+import Components.Link
 import Components.Page.Header
+import Dict
 import Effect exposing (Effect)
 import Element exposing (..)
+import Element.Background as Background
+import Element.Border as Border
+import Element.Font as Font
+import Element.Input as Input
+import FlatColors.TurkishPalette as Colors
+import Http
 import Layouts
 import Page exposing (Page)
 import Route exposing (Route)
+import Route.Path
 import Shared
+import Shared.Model
 import View exposing (View)
 
 
 page : Shared.Model -> Route () -> Page Model Msg
-page shared route =
+page sharedModel route =
     Page.new
-        { init = init
+        { init = init sharedModel
         , update = update
         , subscriptions = subscriptions
-        , view = view
+        , view = view sharedModel
         }
-        |> Page.withLayout Layouts.Main_Guest
+        |> Page.withLayout (\model -> Layouts.Main_Guest {})
 
 
 
@@ -29,8 +40,8 @@ type alias Model =
     {}
 
 
-init : () -> ( Model, Effect Msg )
-init () =
+init : Shared.Model.Model -> () -> ( Model, Effect Msg )
+init sharedModel () =
     ( {}
     , Effect.none
     )
@@ -48,9 +59,7 @@ update : Msg -> Model -> ( Model, Effect Msg )
 update msg model =
     case msg of
         NoOp ->
-            ( model
-            , Effect.none
-            )
+            ( model, Effect.none )
 
 
 
@@ -66,9 +75,57 @@ subscriptions model =
 -- VIEW
 
 
-view : Model -> View Msg
-view model =
+view : Shared.Model.Model -> Model -> View Msg
+view sharedModel model =
     { title = "Items"
     , attributes = []
-    , element = row [] [ Components.Page.Header.view "ITEMS" ]
+    , element =
+        column
+            [ width fill
+            , height fill
+            , spacing 20
+            , padding 20
+            ]
+            [ Components.Page.Header.view "ITEMS"
+            , viewItems sharedModel.items
+            ]
     }
+
+
+viewItems : List Shared.Model.Item -> Element msg
+viewItems items =
+    wrappedRow
+        [ width (fill |> maximum 620)
+        , centerX
+        , centerY
+        , spacingXY 10 10
+        ]
+    <|
+        List.map
+            (\item ->
+                Components.Link.view
+                    { routePath =
+                        Route.Path.Items_Id_ { id = item.id |> String.fromInt }
+                    , label =
+                        column
+                            [ width (px 300)
+                            , height (px 300)
+                            , Border.color Colors.balticSea
+                            , Border.solid
+                            , Border.width 2
+                            , Border.rounded 5
+                            , spacing 5
+                            , pointer
+                            , mouseOver
+                                [ alpha 0.4
+                                , Border.color Colors.radiantYellow
+                                , Font.color Colors.radiantYellow
+                                ]
+                            ]
+                            [ row [ centerX, centerY, Font.size 22, Font.bold ] [ text item.name ]
+                            , row [ centerX, centerY, Font.size 18 ] [ text ("€" ++ String.fromFloat item.price) ]
+                            , row [ centerX, centerY, Font.size 14 ] [ text (String.fromInt item.qty ++ " copies left") ]
+                            ]
+                    }
+            )
+            items

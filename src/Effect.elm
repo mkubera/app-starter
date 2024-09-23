@@ -6,8 +6,7 @@ module Effect exposing
     , pushRoutePath, replaceRoutePath
     , loadExternalUrl, back
     , map, toCmd
-    , clearErrorNotification, clearSuccessNotification, login, logout, saveErrorNotification, saveSuccessNotification
-    ,updateUser
+    , clearErrorNotification, clearSuccessNotification, login, logout, saveErrorNotification, saveItems, saveSuccessNotification, updateUser
     )
 
 {-|
@@ -52,9 +51,16 @@ type Effect msg
 
 -- ADDED
 
+
+saveItems : { items : List Shared.Model.Item } -> Effect msg
+saveItems { items } =
+    SendSharedMsg (Shared.Msg.SaveItems items)
+
+
 updateUser : { user : Shared.Model.User } -> Effect msg
-updateUser {user} =
+updateUser { user } =
     SendSharedMsg (Shared.Msg.UpdateUser user)
+
 
 login : { token : String, user : Shared.Model.User } -> Effect msg
 login data =

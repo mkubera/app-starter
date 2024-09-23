@@ -13,6 +13,7 @@ module Shared exposing
 
 -}
 
+import Api.Items
 import Dict
 import Effect exposing (Effect)
 import Json.Decode
@@ -51,25 +52,35 @@ type alias Model =
 
 init : Result Json.Decode.Error Flags -> Route () -> ( Model, Effect Msg )
 init flagsResult route =
+    let
+        initModel : { apiUrl : String } -> Model
+        initModel { apiUrl } =
+            { token = Nothing
+            , user = Nothing
+            , apiUrl = apiUrl
+            , successNotification = Nothing
+            , errorNotification = Nothing
+            , items = []
+            }
+
+        initEffects { apiUrl } =
+            Effect.batch
+                [ Api.Items.getAll
+                    { onResponse = Shared.Msg.ApiGetItemsResponse
+                    , apiUrl = apiUrl
+                    }
+                ]
+    in
     case flagsResult of
         Ok { apiUrl } ->
-            ( { token = Nothing
-              , user = Nothing
-              , apiUrl = apiUrl
-              , successNotification = Nothing
-              , errorNotification = Nothing
-              }
-            , Effect.none
+            ( initModel { apiUrl = apiUrl }
+            , initEffects { apiUrl = apiUrl }
             )
 
-        Err err ->
-            ( { token = Nothing
-              , user = Nothing
-              , apiUrl = ""
-              , successNotification = Nothing
-              , errorNotification = Nothing
-              }
-            , Effect.none
+        Err _ ->
+            ( initModel { apiUrl = "" }
+            , Effect.saveErrorNotification
+                { errString = "Failed to load data. Refresh the window or try again later." }
             )
 
 
@@ -84,6 +95,24 @@ type alias Msg =
 update : Route () -> Msg -> Model -> ( Model, Effect Msg )
 update route msg model =
     case msg of
+        Shared.Msg.ApiGetItemsResponse (Ok items) ->
+            ( model
+            , Effect.saveItems { items = items }
+            )
+
+        Shared.Msg.ApiGetItemsResponse (Err _) ->
+            ( model
+            , Effect.saveErrorNotification
+                { errString = "Something went wrong." }
+            )
+
+        Shared.Msg.SaveItems items ->
+            ( { model
+                | items = items
+              }
+            , Effect.none
+            )
+
         Shared.Msg.UpdateUser user ->
             ( { model
                 | user = Just user

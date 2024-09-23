@@ -2,15 +2,59 @@ import express from "express";
 import cors from "cors";
 const app = express();
 
-const DUMMY_USER = { id: 0, email: "" };
-const USER = { id: 1, email: "user@world.free" };
-const TOKEN = "secret-token";
-const MAGIC_TOKEN = "2MDZQR";
-
 const wait = (fn, ms = 1000) => setTimeout(fn, ms);
 
 app.use(express.json());
 app.use(cors());
+
+// API: ITEMS
+let items = [
+  {
+    id: 1,
+    name: "drop EP digital",
+    price: 5.55,
+    qty: 12,
+    createdAt: Date.now(),
+  },
+  {
+    id: 2,
+    name: "drop LE tee #1",
+    price: 5.55,
+    qty: 12,
+    createdAt: Date.now(),
+  },
+  {
+    id: 3,
+    name: "drop EP LE set",
+    price: 5.55,
+    qty: 12,
+    createdAt: Date.now(),
+  },
+  {
+    id: 4,
+    name: "drop EP CD",
+    price: 5.55,
+    qty: 12,
+    createdAt: Date.now(),
+  },
+  {
+    id: 5,
+    name: "drop LE tee #2",
+    price: 19.13,
+    qty: 12,
+    createdAt: Date.now(),
+  },
+];
+
+app.get("/api/items", (req, res) => {
+  res.status(200).json(items);
+});
+
+// API: USER AUTH
+const DUMMY_USER = { id: 0, email: "" };
+const USER = { id: 1, email: "user@world.free" };
+const TOKEN = "secret-token";
+const MAGIC_TOKEN = "2MDZQR";
 
 app.post("/api/users/signup", (req, res) => {
   res.status(201).send();
