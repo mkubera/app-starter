@@ -3,6 +3,7 @@ module Layouts.Main exposing (Model, Msg, Props, layout)
 import Effect exposing (Effect)
 import Element exposing (..)
 import Element.Background as Background
+import Element.Input exposing (button)
 import FlatColors.TurkishPalette as Colors
 import Layout exposing (Layout)
 import Route exposing (Route)
@@ -45,15 +46,15 @@ init _ =
 
 
 type Msg
-    = ReplaceMe
+    = CloseErrorNotification
 
 
 update : Msg -> Model -> ( Model, Effect Msg )
 update msg model =
     case msg of
-        ReplaceMe ->
+        CloseErrorNotification ->
             ( model
-            , Effect.none
+            , Effect.clearErrorNotification
             )
 
 
@@ -72,17 +73,25 @@ view sharedModel { toContentMsg, model, content } =
     , attributes = []
     , element =
         column [ width fill, height fill ]
-            [ viewErrorNotification sharedModel.errorNotification
+            [ viewErrorNotification sharedModel.errorNotification |> Element.map toContentMsg
             , content.element
             ]
     }
 
 
-viewErrorNotification : Maybe String -> Element msg
+viewErrorNotification : Maybe String -> Element Msg
 viewErrorNotification mbErrorNotification =
     case mbErrorNotification of
         Just err ->
-            row [ Background.color Colors.redOrange, width fill, padding 10 ] [ text err ]
+            row
+                [ Background.color Colors.redOrange
+                , width fill
+                , padding 10
+                , spaceEvenly
+                ]
+                [ text err
+                , button [] { onPress = Just CloseErrorNotification, label = text "x" }
+                ]
 
         Nothing ->
             none
