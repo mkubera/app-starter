@@ -1,10 +1,16 @@
 module Pages.Basket exposing (Model, Msg, page)
 
+import Api.Basket
 import Components.Page.Header
 import Effect exposing (Effect)
 import Element exposing (..)
+import Element.Background as Background
+import Element.Border as Border
 import Element.Font as Font
+import Element.Input as Input
 import FlatColors.TurkishPalette as Colors
+import Html exposing (q)
+import Http
 import Layouts
 import Page exposing (Page)
 import Route exposing (Route)
@@ -17,7 +23,7 @@ page : Shared.Model -> Route () -> Page Model Msg
 page sharedModel route =
     Page.new
         { init = init
-        , update = update
+        , update = update sharedModel
         , subscriptions = subscriptions
         , view = view sharedModel
         }
@@ -44,15 +50,57 @@ init () =
 
 
 type Msg
-    = NoOp
+    = IncrementItem { id : Int }
+    | DecrementItem { id : Int }
+    | ApiIncrementItemResponse (Result Http.Error { id : Int })
+    | ApiDecrementItemResponse (Result Http.Error { id : Int })
 
 
-update : Msg -> Model -> ( Model, Effect Msg )
-update msg model =
+update : Shared.Model.Model -> Msg -> Model -> ( Model, Effect Msg )
+update sharedModel msg model =
     case msg of
-        NoOp ->
+        IncrementItem { id } ->
             ( model
-            , Effect.none
+            , Effect.batch
+                [ Api.Basket.incrementItem
+                    { onResponse = ApiIncrementItemResponse
+                    , id = id
+                    , apiUrl = sharedModel.apiUrl
+                    , token = sharedModel.token |> Maybe.withDefault ""
+                    }
+                ]
+            )
+
+        DecrementItem { id } ->
+            ( model
+            , Effect.batch
+                [ Api.Basket.decrementItem
+                    { onResponse = ApiDecrementItemResponse
+                    , id = id
+                    , apiUrl = sharedModel.apiUrl
+                    , token = sharedModel.token |> Maybe.withDefault ""
+                    }
+                ]
+            )
+
+        ApiIncrementItemResponse (Ok { id }) ->
+            ( model
+            , Effect.incrementBasketItemQty { id = id }
+            )
+
+        ApiIncrementItemResponse (Err _) ->
+            ( model
+            , Effect.saveErrorNotification { errString = "Something went wrong." }
+            )
+
+        ApiDecrementItemResponse (Ok { id }) ->
+            ( model
+            , Effect.decrementBasketItemQty { id = id }
+            )
+
+        ApiDecrementItemResponse (Err _) ->
+            ( model
+            , Effect.saveErrorNotification { errString = "Something went wrong." }
             )
 
 
@@ -88,10 +136,10 @@ view sharedModel model =
 
 viewBasket userBasket =
     -- TODO:
-    -- 1) UI basket (U+D)
+    -- 1) UI basket (D)
     column [ spacing 20 ] <|
         List.map
-            (\{ id, name, price } ->
+            (\{ id, name, price, qty } ->
                 row
                     [ spacing 5
                     , below <|
@@ -104,9 +152,56 @@ viewBasket userBasket =
                         <|
                             text "The moon icon is purely decorative. You Are Not Purchasing the Earth's Moon!! ☝"
                     ]
-                    [ text <| "[id:" ++ String.fromInt id ++ "]🌗 "
-                    , text name
-                    , text (" (€" ++ String.fromFloat price ++ ")")
+                    [ row
+                        (if qty == 0 then
+                            [ Font.medium, alpha 0.5 ]
+
+                         else
+                            [ Font.medium, alpha 1 ]
+                        )
+                        [ el [ Font.bold ] <| text (String.fromInt qty ++ "x")
+                        , text " 🌗 "
+                        , text name
+                        , text (" (€" ++ String.fromFloat price ++ ")")
+                        ]
+                    , text " || "
+                    , viewBasketIncrementItemBtn { id = id }
+
+                    -- , text (String.fromInt qty)
+                    , viewBasketDecrementItemBtn { id = id, qty = qty }
                     ]
             )
             userBasket
+
+
+viewBasketIncrementItemBtn : { id : Int } -> Element Msg
+viewBasketIncrementItemBtn { id } =
+    Input.button
+        [ Background.color Colors.brightLilac
+        , Font.color (rgb255 255 255 255)
+        , width (px 20)
+        , height (px 20)
+        , Font.center
+        , Border.rounded 5
+        ]
+        { onPress = Just (IncrementItem { id = id }), label = text "+" }
+
+
+viewBasketDecrementItemBtn : { id : Int, qty : Int } -> Element Msg
+viewBasketDecrementItemBtn { id, qty } =
+    Input.button
+        [ Background.color Colors.redOrange
+        , Font.color (rgb255 255 255 255)
+        , width (px 20)
+        , height (px 20)
+        , Font.center
+        , Border.rounded 5
+        ]
+        { onPress =
+            if qty > 0 then
+                Just (DecrementItem { id = id })
+
+            else
+                Nothing
+        , label = text "-"
+        }

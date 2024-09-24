@@ -101,3 +101,91 @@ add { onResponse, id, apiUrl, token } =
                 }
     in
     Effect.sendCmd cmd
+
+
+
+-- INCREMENT BASKET ITEM
+
+
+type alias IncrementItemResponseData =
+    { id : Int }
+
+
+incrementItemResponseDecoder : D.Decoder IncrementItemResponseData
+incrementItemResponseDecoder =
+    D.map IncrementItemResponseData
+        (D.field "id" D.int)
+
+
+incrementItem :
+    { onResponse : Result Http.Error IncrementItemResponseData -> msg
+    , id : Int
+    , apiUrl : String
+    , token : String
+    }
+    -> Effect msg
+incrementItem { onResponse, id, apiUrl, token } =
+    let
+        encodedBody : E.Value
+        encodedBody =
+            E.object
+                [ ( "id", E.int id )
+                ]
+
+        cmd : Cmd msg
+        cmd =
+            Http.request
+                { method = "put"
+                , headers = [ Api.Headers.auth token ]
+                , url = apiUrl ++ "/basket/items/" ++ String.fromInt id ++ "/increment"
+                , body = Http.jsonBody encodedBody
+                , expect = Http.expectJson onResponse incrementItemResponseDecoder
+                , timeout = Nothing
+                , tracker = Nothing
+                }
+    in
+    Effect.sendCmd cmd
+
+
+
+-- DECREMENT BASKET ITEM
+
+
+type alias DecrementItemResponseData =
+    { id : Int }
+
+
+decrementItemResponseDecoder : D.Decoder DecrementItemResponseData
+decrementItemResponseDecoder =
+    D.map DecrementItemResponseData
+        (D.field "id" D.int)
+
+
+decrementItem :
+    { onResponse : Result Http.Error DecrementItemResponseData -> msg
+    , id : Int
+    , apiUrl : String
+    , token : String
+    }
+    -> Effect msg
+decrementItem { onResponse, id, apiUrl, token } =
+    let
+        encodedBody : E.Value
+        encodedBody =
+            E.object
+                [ ( "id", E.int id )
+                ]
+
+        cmd : Cmd msg
+        cmd =
+            Http.request
+                { method = "put"
+                , headers = [ Api.Headers.auth token ]
+                , url = apiUrl ++ "/basket/items/" ++ String.fromInt id ++ "/decrement"
+                , body = Http.jsonBody encodedBody
+                , expect = Http.expectJson onResponse decrementItemResponseDecoder
+                , timeout = Nothing
+                , tracker = Nothing
+                }
+    in
+    Effect.sendCmd cmd

@@ -45,10 +45,12 @@ let items = [
     createdAt: Date.now(),
   },
 ];
-let userBasket = [];
+let userBasket = [
+  { ...items[0], itemId: items[0].id, id: 1, qty: 1, createdAt: Date.now() },
+];
 
 // HELPER FUNCTIONS
-const wait = (fn, ms = 1000) => setTimeout(fn, ms);
+const wait = (fn, ms = 250) => setTimeout(fn, ms);
 const middlewareAuthorizeUser = (req, res, next) => {
   const { auth } = req.headers;
   const token = auth.replace("bearer ", "");
@@ -66,6 +68,45 @@ app.use(express.json());
 app.use(cors());
 
 // API: ITEMS + BASKET
+
+app.put(
+  "/api/basket/items/:id/increment",
+  middlewareAuthorizeUser,
+  (req, res) => {
+    const { id } = req.params;
+
+    userBasket = userBasket.map((basketItem) =>
+      basketItem.id === Number(id)
+        ? { ...basketItem, qty: basketItem.qty + 1 }
+        : basketItem
+    );
+
+    res.status(200).json({ id: Number(id) });
+  }
+);
+
+app.put(
+  "/api/basket/items/:id/decrement",
+  middlewareAuthorizeUser,
+  (req, res) => {
+    const { id } = req.params;
+
+    console.log(userBasket);
+
+    if (userBasket.find((basketItem) => basketItem.id === Number(id))) {
+      userBasket = userBasket.map((basketItem) =>
+        basketItem.id === Number(id)
+          ? { ...basketItem, qty: basketItem.qty - 1 }
+          : basketItem
+      );
+      // .filter((basketItem) => basketItem.qty > 0);
+    } else {
+      res.status(403).send(`BasketItem of id ${id} doesn't exist.`);
+    }
+
+    res.status(200).json({ id: Number(id) });
+  }
+);
 
 app.get("/api/users/:id/basket", middlewareAuthorizeUser, (req, res) => {
   const { id } = req.params;

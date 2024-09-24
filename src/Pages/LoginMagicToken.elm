@@ -100,7 +100,7 @@ update sharedModel msg model =
             , Effect.batch
                 [ Effect.clearErrorNotification
                 , Effect.saveSuccessNotification
-                    { successString = "You have successfully logged in 🤝" }
+                    { successString = "You have successfully logged in. Welcome! 🤝" }
                 , Effect.login { token = token, user = user }
                 ]
             )

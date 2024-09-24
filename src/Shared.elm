@@ -107,6 +107,40 @@ type alias Msg =
 update : Route () -> Msg -> Model -> ( Model, Effect Msg )
 update route msg model =
     case msg of
+        Shared.Msg.IncrementBasketItem { id } ->
+            let
+                newBasket =
+                    List.map
+                        (\basketItem ->
+                            if basketItem.id == id then
+                                { basketItem | qty = basketItem.qty + 1 }
+
+                            else
+                                basketItem
+                        )
+                        model.userBasket
+            in
+            ( { model | userBasket = newBasket }, Effect.none )
+
+        Shared.Msg.DecrementBasketItem { id } ->
+            let
+                newBasket =
+                    model.userBasket
+                        |> List.map
+                            (\basketItem ->
+                                if basketItem.id == id then
+                                    { basketItem | qty = basketItem.qty - 1 }
+
+                                else
+                                    basketItem
+                            )
+                        -- |> List.filter
+                        --     (\basketItem ->
+                        --         basketItem.qty > 0
+                        --     )
+            in
+            ( { model | userBasket = newBasket }, Effect.none )
+
         Shared.Msg.SaveBasket { basket } ->
             ( { model
                 | userBasket = basket

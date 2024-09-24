@@ -14,13 +14,20 @@ own file, so they can be imported by `Effect.elm`
 
 -}
 type Msg
-    = SaveBasket { basket : List Shared.Model.BasketItem }
+    = --BASKET
+      IncrementBasketItem { id : Int }
+    | DecrementBasketItem { id : Int }
+    | SaveBasket { basket : List Shared.Model.BasketItem }
     | AddToBasket { basketItem : Shared.Model.BasketItem }
+      -- ITEMS
     | ApiGetItemsResponse (Result Http.Error (List Shared.Model.Item))
     | SaveItems (List Shared.Model.Item)
+      -- USER
     | UpdateUser Shared.Model.User
+      -- AUTH
     | Login { token : String, user : Shared.Model.User }
     | Logout
+      -- NOTIFICATIONS
     | SaveSuccessNotification String
     | ClearSuccessNotification
     | SaveErrorNotification String
