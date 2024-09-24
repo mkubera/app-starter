@@ -27,7 +27,15 @@ page sharedModel route =
         , subscriptions = subscriptions
         , view = view sharedModel
         }
-        |> Page.withLayout (\model -> Layouts.Main_User {})
+        |> Page.withLayout
+            (\model ->
+                case sharedModel.user of
+                    Just _ ->
+                        Layouts.Main_User {}
+
+                    Nothing ->
+                        Layouts.Main_Guest {}
+            )
 
 
 
@@ -151,17 +159,18 @@ view sharedModel model =
             , spacing 20
             , padding 20
             ]
-            [ Components.Page.Header.view "BASKET"
-            , viewBasketItems sharedModel.userBasket
+            [ row [ centerX, spacing 5 ]
+                [ Components.Page.Header.view "BASKET"
+                , viewBasketClear
+                ]
             , viewBasketTotal sharedModel.userBasket
-            , viewBasketClear
+            , viewBasketItems sharedModel.userBasket
             ]
     }
 
 
+viewBasketItems : List Shared.Model.BasketItem -> Element Msg
 viewBasketItems userBasket =
-    -- TODO:
-    -- 1) UI basket (D)
     column [ spacing 20 ] <|
         List.map
             (\{ id, name, price, qty } ->
@@ -189,10 +198,7 @@ viewBasketItems userBasket =
                         , text name
                         , text (" (€" ++ String.fromFloat price ++ ")")
                         ]
-                    , text " || "
                     , viewBasketIncrementItemBtn { id = id }
-
-                    -- , text (String.fromInt qty)
                     , viewBasketDecrementItemBtn { id = id, qty = qty }
                     ]
             )
@@ -258,10 +264,18 @@ viewBasketTotal userBasket =
         ]
 
 
+viewBasketClear : Element Msg
 viewBasketClear =
-    row []
-        [ Input.button []
-            { onPress = Just ClearBasket, label = text "Clear basket" }
+    row
+        [ centerX
+        , Background.color Colors.radiantYellow
+        , alpha 0.8
+
+        -- , Font.italic
+        , Font.size 15
+        , padding 8
+        , Border.rounded 5
         ]
-
-
+        [ Input.button []
+            { onPress = Just ClearBasket, label = text "🌑" }
+        ]

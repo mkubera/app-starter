@@ -96,6 +96,7 @@ viewNavbar model =
         [ row [] [ Components.NavLink.view Route.Path.Home_ ]
         , row [ spacing 20 ]
             [ Components.NavLink.view Route.Path.Items
+            , Components.NavLink.view Route.Path.Basket
             , Components.NavLink.view Route.Path.Signup
             , Components.NavLink.view Route.Path.Login
             ]
