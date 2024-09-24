@@ -39,12 +39,20 @@ type alias UserItem =
     BasketItem
 
 
+type Modal
+    = PayConfirmation
+    | ClearBasketConfirmation
+
+
 type alias Model =
     { token : Maybe String
     , user : Maybe User
     , apiUrl : String
     , successNotification : Maybe String
     , errorNotification : Maybe String
+    , modal : Maybe Modal
+
+    -- DATA
     , items : List Item
     , userBasket : List BasketItem
     , userItems : List UserItem

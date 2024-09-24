@@ -21,6 +21,7 @@ import Route exposing (Route)
 import Route.Path
 import Shared.Model
 import Shared.Msg
+import Api.Basket
 
 
 dummyUser : Shared.Model.User
@@ -73,6 +74,7 @@ init flagsResult route =
             , items = []
             , userBasket = []
             , userItems = []
+            , modal = Nothing
             }
 
         initEffects { apiUrl } =
@@ -108,10 +110,27 @@ update : Route () -> Msg -> Model -> ( Model, Effect Msg )
 update route msg model =
     case msg of
         Shared.Msg.ClearBasket ->
+            ( model
+            , Effect.batch
+                [ 
+                    Api.Basket.clear
+                  { onResponse = Shared.Msg.ApiClearBasketResponse
+                  , apiUrl = model.apiUrl
+                  , token = model.token |> Maybe.withDefault ""
+                  }
+                ]
+            )
+
+        Shared.Msg.ApiClearBasketResponse (Ok _) ->
             ( { model | userBasket = [] }
             , Effect.batch
                 [ Effect.saveSuccessNotification { successString = "Your Basket was cleared! 👍" }
                 ]
+            )
+
+        Shared.Msg.ApiClearBasketResponse (Err _) ->
+            ( model
+            , Effect.saveErrorNotification { errString = "Something went wrong." }
             )
 
         Shared.Msg.IncrementBasketItem { id } ->
@@ -142,10 +161,6 @@ update route msg model =
                                     basketItem
                             )
 
-                -- |> List.filter
-                --     (\basketItem ->
-                --         basketItem.qty > 0
-                --     )
             in
             ( { model | userBasket = newBasket }, Effect.none )
 
@@ -233,6 +248,9 @@ update route msg model =
             ( { model | errorNotification = Nothing }
             , Effect.none
             )
+
+        Shared.Msg.ToggleModal { modal } ->
+            ( { model | modal = modal }, Effect.none )
 
 
 

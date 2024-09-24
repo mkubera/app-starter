@@ -1,9 +1,10 @@
 module Layouts.Main exposing (Model, Msg, Props, layout)
 
+import Components.Modal as Modal
 import Effect exposing (Effect)
 import Element exposing (..)
 import Element.Background as Background
-import Element.Input exposing (button)
+import Element.Input as Input exposing (button)
 import FlatColors.TurkishPalette as Colors
 import Layout exposing (Layout)
 import Route exposing (Route)
@@ -20,7 +21,7 @@ layout : Props -> Shared.Model -> Route () -> Layout () Model Msg contentMsg
 layout props sharedModel route =
     Layout.new
         { init = init
-        , update = update
+        , update = update sharedModel
         , view = view sharedModel
         , subscriptions = subscriptions
         }
@@ -48,10 +49,12 @@ init _ =
 type Msg
     = CloseErrorNotification
     | CloseSuccessNotification
+    | ToggleModal (Maybe Shared.Model.Modal)
+    | ConfirmModal
 
 
-update : Msg -> Model -> ( Model, Effect Msg )
-update msg model =
+update : Shared.Model.Model -> Msg -> Model -> ( Model, Effect Msg )
+update sharedModel msg model =
     case msg of
         CloseErrorNotification ->
             ( model
@@ -61,6 +64,30 @@ update msg model =
         CloseSuccessNotification ->
             ( model
             , Effect.clearSuccessNotification
+            )
+
+        ToggleModal mbModal ->
+            ( {}
+            , Effect.batch
+                [ Effect.toggleModal { modal = mbModal }
+                ]
+            )
+
+        ConfirmModal ->
+            ( {}
+            , Effect.batch
+                [ case sharedModel.modal of
+                    Just Shared.Model.PayConfirmation ->
+                        Effect.saveSuccessNotification
+                            { successString = "TODO: need to do something upon Payment Confirmation(!)" }
+
+                    Just Shared.Model.ClearBasketConfirmation ->
+                        Effect.clearBasket
+
+                    Nothing ->
+                        Effect.none
+                , Effect.toggleModal { modal = Nothing }
+                ]
             )
 
 
@@ -78,7 +105,20 @@ view sharedModel { toContentMsg, model, content } =
     { title = content.title ++ " | App Starter"
     , attributes = []
     , element =
-        column [ width fill, height fill ]
+        column
+            [ width fill
+            , height fill
+
+            -- MODAL
+            , inFront
+                (Modal.view
+                    { sharedModel = sharedModel
+                    , onConfirm = ConfirmModal
+                    , onClose = ToggleModal Nothing
+                    }
+                    |> Element.map toContentMsg
+                )
+            ]
             [ viewSuccessNotification sharedModel.successNotification |> Element.map toContentMsg
             , viewErrorNotification sharedModel.errorNotification |> Element.map toContentMsg
             , content.element
@@ -115,7 +155,7 @@ viewErrorNotification mbErrorNotification =
                 , spaceEvenly
                 ]
                 [ text err
-                , button [] { onPress = Just CloseErrorNotification, label = text "x" }
+                , Input.button [] { onPress = Just CloseErrorNotification, label = text "x" }
                 ]
 
         Nothing ->

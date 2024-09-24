@@ -16,6 +16,7 @@ own file, so they can be imported by `Effect.elm`
 type Msg
     = --BASKET
       ClearBasket
+      | ApiClearBasketResponse (Result Http.Error ())
     | IncrementBasketItem { id : Int }
     | DecrementBasketItem { id : Int }
     | SaveBasket { basket : List Shared.Model.BasketItem }
@@ -33,3 +34,5 @@ type Msg
     | ClearSuccessNotification
     | SaveErrorNotification String
     | ClearErrorNotification
+      -- MODAL
+    | ToggleModal { modal : Maybe Shared.Model.Modal }

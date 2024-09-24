@@ -64,7 +64,7 @@ type Msg
     | Pay
     | ApiIncrementItemResponse (Result Http.Error { id : Int })
     | ApiDecrementItemResponse (Result Http.Error { id : Int })
-    | ApiClearBasketResponse (Result Http.Error ())
+    -- | ApiClearBasketResponse (Result Http.Error ())
 
 
 update : Shared.Model.Model -> Msg -> Model -> ( Model, Effect Msg )
@@ -97,17 +97,23 @@ update sharedModel msg model =
         ClearBasket ->
             ( model
             , Effect.batch
-                [ Api.Basket.clear
-                    { onResponse = ApiClearBasketResponse
-                    , apiUrl = sharedModel.apiUrl
-                    , token = sharedModel.token |> Maybe.withDefault ""
-                    }
+                [ Effect.toggleModal
+                    { modal = Just Shared.Model.ClearBasketConfirmation }
                 ]
+              -- [ Api.Basket.clear
+              --     { onResponse = ApiClearBasketResponse
+              --     , apiUrl = sharedModel.apiUrl
+              --     , token = sharedModel.token |> Maybe.withDefault ""
+              --     }
+              -- ]
             )
 
         Pay ->
             ( model
-            , Effect.batch []
+            , Effect.batch
+                [ Effect.toggleModal
+                    { modal = Just Shared.Model.PayConfirmation }
+                ]
             )
 
         ApiIncrementItemResponse (Ok { id }) ->
@@ -130,15 +136,15 @@ update sharedModel msg model =
             , Effect.saveErrorNotification { errString = "Something went wrong." }
             )
 
-        ApiClearBasketResponse (Ok _) ->
-            ( model
-            , Effect.clearBasket
-            )
+        -- ApiClearBasketResponse (Ok _) ->
+        --     ( model
+        --     , Effect.clearBasket
+        --     )
 
-        ApiClearBasketResponse (Err _) ->
-            ( model
-            , Effect.saveErrorNotification { errString = "Something went wrong." }
-            )
+        -- ApiClearBasketResponse (Err _) ->
+        --     ( model
+        --     , Effect.saveErrorNotification { errString = "Something went wrong." }
+        --     )
 
 
 

@@ -6,7 +6,7 @@ module Effect exposing
     , pushRoutePath, replaceRoutePath
     , loadExternalUrl, back
     , map, toCmd
-    , addToBasket, clearBasket, clearErrorNotification, clearSuccessNotification, decrementBasketItemQty, getBasket, incrementBasketItemQty, login, logout, saveErrorNotification, saveItems, saveSuccessNotification, updateUser
+    , addToBasket, clearBasket, clearErrorNotification, clearSuccessNotification, decrementBasketItemQty, getBasket, incrementBasketItemQty, login, logout, saveErrorNotification, saveItems, saveSuccessNotification, toggleModal, updateUser
     )
 
 {-|
@@ -50,6 +50,10 @@ type Effect msg
 
 
 -- ADDED
+
+
+toggleModal { modal } =
+    SendSharedMsg (Shared.Msg.ToggleModal { modal = modal })
 
 
 clearBasket : Effect msg

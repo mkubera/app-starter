@@ -69,7 +69,7 @@ app.use(cors());
 
 // API: ITEMS + BASKET
 
-app.delete("/api/basket", middlewareAuthorizeUser, (req, res) => {
+app.delete("/api/basket", (req, res) => {
   userBasket = [];
 
   res.status(200).send();
