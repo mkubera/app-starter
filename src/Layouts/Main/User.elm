@@ -167,12 +167,12 @@ viewNavbar model =
                 button
                     [ alpha 0.5
                     ]
-                    { onPress = Nothing, label = text "Logout" }
+                    { onPress = Nothing, label = text "log out" }
 
               else
                 button
                     [ mouseOver [ alpha 0.5 ]
                     ]
-                    { onPress = Just Logout, label = text "Logout" }
+                    { onPress = Just Logout, label = text "log out" }
             ]
         ]

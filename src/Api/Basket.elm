@@ -75,17 +75,16 @@ basketItemDecoder =
 
 add :
     { onResponse : Result Http.Error AddToBasketResponseData -> msg
-    , id : Int
+    , itemId : Int
     , apiUrl : String
-    , token : String
     }
     -> Effect msg
-add { onResponse, id, apiUrl, token } =
+add { onResponse, itemId, apiUrl } =
     let
         encodedBody : E.Value
         encodedBody =
             E.object
-                [ ( "id", E.int id )
+                [ ( "itemId", E.int itemId )
                 ]
 
         cmd : Cmd msg
@@ -184,6 +183,33 @@ decrementItem { onResponse, id, apiUrl, token } =
                 , url = apiUrl ++ "/basket/items/" ++ String.fromInt id ++ "/decrement"
                 , body = Http.jsonBody encodedBody
                 , expect = Http.expectJson onResponse decrementItemResponseDecoder
+                , timeout = Nothing
+                , tracker = Nothing
+                }
+    in
+    Effect.sendCmd cmd
+
+
+
+-- CLEAR BASKET
+
+
+clear :
+    { onResponse : Result Http.Error () -> msg
+    , apiUrl : String
+    , token : String
+    }
+    -> Effect msg
+clear { onResponse, apiUrl, token } =
+    let
+        cmd : Cmd msg
+        cmd =
+            Http.request
+                { method = "delete"
+                , headers = [ Api.Headers.auth token ]
+                , url = apiUrl ++ "/basket"
+                , body = Http.emptyBody
+                , expect = Http.expectWhatever onResponse
                 , timeout = Nothing
                 , tracker = Nothing
                 }

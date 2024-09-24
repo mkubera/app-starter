@@ -43,13 +43,13 @@ view routePath =
         User_Profile ->
             link defaultAttributes
                 { url = Route.Path.toString Route.Path.User_Profile
-                , label = text "Profile"
+                , label = text "👤"
                 }
 
         Basket ->
             link defaultAttributes
                 { url = Route.Path.toString Route.Path.Basket
-                , label = text "Basket"
+                , label = text "🛒"
                 }
 
         _ ->

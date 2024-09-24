@@ -58,12 +58,12 @@ page sharedModel route =
 
 
 type alias Model =
-    {}
+    { isSubmitting : Bool }
 
 
 init : Shared.Model.Model -> () -> ( Model, Effect Msg )
 init sharedModel () =
-    ( {}
+    ( { isSubmitting = False }
     , Effect.none
     )
 
@@ -73,30 +73,29 @@ init sharedModel () =
 
 
 type Msg
-    = AddToBasket { id : Int }
+    = AddToBasket { itemId : Int }
     | ApiAddToBasketResponse (Result Http.Error Api.Basket.AddToBasketResponseData)
 
 
 update : Shared.Model.Model -> Msg -> Model -> ( Model, Effect Msg )
 update sharedModel msg model =
     case msg of
-        AddToBasket { id } ->
-            ( model
+        AddToBasket { itemId } ->
+            ( { model | isSubmitting = True }
             , Api.Basket.add
                 { onResponse = ApiAddToBasketResponse
-                , id = id
+                , itemId = itemId
                 , apiUrl = sharedModel.apiUrl
-                , token = sharedModel.token |> Maybe.withDefault ""
                 }
             )
 
         ApiAddToBasketResponse (Ok { basketItem }) ->
-            ( model
+            ( { model | isSubmitting = False }
             , Effect.addToBasket { basketItem = basketItem }
             )
 
         ApiAddToBasketResponse (Err _) ->
-            ( model
+            ( { model | isSubmitting = False }
             , Effect.saveErrorNotification { errString = "Something went wrong." }
             )
 
@@ -143,33 +142,62 @@ view sharedModel itemId model =
                 , label = text "<- back to Items"
                 }
             , Components.Page.Header.view "ITEM"
-            , viewAddToBasket item.id
+            , viewAddToBasket
+                { id = item.id
+                , userBasket = sharedModel.userBasket
+                , isSubmitting = model.isSubmitting
+                }
             , viewItem item
             ]
     }
 
 
-viewAddToBasket : Int -> Element Msg
-viewAddToBasket id =
-    column
-        [ centerX
-        ]
-        [ Input.button
-            [ Font.color Colors.balticSea
-            , padding 8
-            , Border.color Colors.balticSea
-            , Border.solid
-            , Border.width 2
-            , Border.rounded 5
-            , mouseOver
-                [ Font.color Colors.radiantYellow
-                , Border.color Colors.radiantYellow
-                ]
+viewAddToBasket :
+    { id : Int
+    , userBasket : List Shared.Model.BasketItem
+    , isSubmitting : Bool
+    }
+    -> Element Msg
+viewAddToBasket { id, userBasket, isSubmitting } =
+    let
+        itemAlreadyInBasket =
+            List.any (\basketItem -> basketItem.itemId == id) userBasket
+    in
+    if itemAlreadyInBasket then
+        row
+            [ Font.italic
+            , Font.color Colors.shadowedSteel
+            , Font.size 18
+            , centerX
+            , alpha 0.8
             ]
-            { onPress = Just (AddToBasket { id = id })
-            , label = text "+basket"
-            }
-        ]
+            [ text "is already in your 🛒" ]
+
+    else
+        row
+            [ centerX
+            ]
+            [ Input.button
+                [ Font.color Colors.balticSea
+                , padding 8
+                , Border.color Colors.balticSea
+                , Border.solid
+                , Border.width 2
+                , Border.rounded 5
+                , mouseOver
+                    [ Font.color Colors.radiantYellow
+                    , Border.color Colors.radiantYellow
+                    ]
+                ]
+                { onPress =
+                    if isSubmitting then
+                        Nothing
+
+                    else
+                        Just (AddToBasket { itemId = id })
+                , label = text "+basket"
+                }
+            ]
 
 
 viewItem : Shared.Model.Item -> Element msg

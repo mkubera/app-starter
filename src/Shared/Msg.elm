@@ -15,7 +15,8 @@ own file, so they can be imported by `Effect.elm`
 -}
 type Msg
     = --BASKET
-      IncrementBasketItem { id : Int }
+      ClearBasket
+    | IncrementBasketItem { id : Int }
     | DecrementBasketItem { id : Int }
     | SaveBasket { basket : List Shared.Model.BasketItem }
     | AddToBasket { basketItem : Shared.Model.BasketItem }

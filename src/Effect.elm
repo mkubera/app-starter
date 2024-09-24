@@ -6,7 +6,7 @@ module Effect exposing
     , pushRoutePath, replaceRoutePath
     , loadExternalUrl, back
     , map, toCmd
-    , addToBasket, clearErrorNotification, clearSuccessNotification, decrementBasketItemQty, getBasket, incrementBasketItemQty, login, logout, saveErrorNotification, saveItems, saveSuccessNotification, updateUser
+    , addToBasket, clearBasket, clearErrorNotification, clearSuccessNotification, decrementBasketItemQty, getBasket, incrementBasketItemQty, login, logout, saveErrorNotification, saveItems, saveSuccessNotification, updateUser
     )
 
 {-|
@@ -50,6 +50,11 @@ type Effect msg
 
 
 -- ADDED
+
+
+clearBasket : Effect msg
+clearBasket =
+    SendSharedMsg Shared.Msg.ClearBasket
 
 
 incrementBasketItemQty : { id : Int } -> Effect msg

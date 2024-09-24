@@ -52,8 +52,10 @@ init () =
 type Msg
     = IncrementItem { id : Int }
     | DecrementItem { id : Int }
+    | ClearBasket
     | ApiIncrementItemResponse (Result Http.Error { id : Int })
     | ApiDecrementItemResponse (Result Http.Error { id : Int })
+    | ApiClearBasketResponse (Result Http.Error ())
 
 
 update : Shared.Model.Model -> Msg -> Model -> ( Model, Effect Msg )
@@ -83,6 +85,17 @@ update sharedModel msg model =
                 ]
             )
 
+        ClearBasket ->
+            ( model
+            , Effect.batch
+                [ Api.Basket.clear
+                    { onResponse = ApiClearBasketResponse
+                    , apiUrl = sharedModel.apiUrl
+                    , token = sharedModel.token |> Maybe.withDefault ""
+                    }
+                ]
+            )
+
         ApiIncrementItemResponse (Ok { id }) ->
             ( model
             , Effect.incrementBasketItemQty { id = id }
@@ -99,6 +112,16 @@ update sharedModel msg model =
             )
 
         ApiDecrementItemResponse (Err _) ->
+            ( model
+            , Effect.saveErrorNotification { errString = "Something went wrong." }
+            )
+
+        ApiClearBasketResponse (Ok _) ->
+            ( model
+            , Effect.clearBasket
+            )
+
+        ApiClearBasketResponse (Err _) ->
             ( model
             , Effect.saveErrorNotification { errString = "Something went wrong." }
             )
@@ -129,12 +152,14 @@ view sharedModel model =
             , padding 20
             ]
             [ Components.Page.Header.view "BASKET"
-            , viewBasket sharedModel.userBasket
+            , viewBasketItems sharedModel.userBasket
+            , viewBasketTotal sharedModel.userBasket
+            , viewBasketClear
             ]
     }
 
 
-viewBasket userBasket =
+viewBasketItems userBasket =
     -- TODO:
     -- 1) UI basket (D)
     column [ spacing 20 ] <|
@@ -205,3 +230,38 @@ viewBasketDecrementItemBtn { id, qty } =
                 Nothing
         , label = text "-"
         }
+
+
+viewBasketTotal : List Shared.Model.UserItem -> Element msg
+viewBasketTotal userBasket =
+    let
+        sumOfItems : Float
+        sumOfItems =
+            List.foldl (\{ qty, price } acc -> acc + (toFloat qty * price)) 0 userBasket
+
+        totalTxt : String
+        totalTxt =
+            String.fromFloat sumOfItems
+    in
+    row
+        [ centerX
+        , Font.color Colors.lightIndigo
+        , alpha 0.8
+        , Font.italic
+        , Font.size 18
+        , Border.width 1
+        , Border.solid
+        , Border.color Colors.lightIndigo
+        , padding 10
+        ]
+        [ text <| "€" ++ totalTxt
+        ]
+
+
+viewBasketClear =
+    row []
+        [ Input.button []
+            { onPress = Just ClearBasket, label = text "Clear basket" }
+        ]
+
+

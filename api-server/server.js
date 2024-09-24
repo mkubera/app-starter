@@ -69,6 +69,12 @@ app.use(cors());
 
 // API: ITEMS + BASKET
 
+app.delete("/api/basket", middlewareAuthorizeUser, (req, res) => {
+  userBasket = [];
+
+  res.status(200).send();
+});
+
 app.put(
   "/api/basket/items/:id/increment",
   middlewareAuthorizeUser,
@@ -121,28 +127,27 @@ app.get("/api/users/:id/basket", middlewareAuthorizeUser, (req, res) => {
 app.post("/api/basket/add", (req, res) => {
   const { itemId } = req.body;
 
-  if (userBasket.find((basketItem) => basketItem.itemId === itemId)) {
-    userBasket = userBasket.map((baskeItem) =>
-      baskeItem.itemId === itemId
-        ? { ...baskeItem, qty: baskeItem.qty + 1 }
-        : baskeItem
-    );
-  } else {
-    const correspondingItem = items.find((item) => item.id === itemId);
-    const newBasketItem = {
-      ...correspondingItem,
-      id: userBasket.length + 1,
-      qty: 1,
-      createdAt: Date.now(),
-    };
-    userBasket = [newBasketItem, ...userBasket];
-  }
-
-  const basketItem = userBasket.find(
-    (basketItem) => basketItem.itemId === itemId
+  const dbBasketItem = userBasket.find(
+    (basketItem) => basketItem.itemId === Number(itemId)
   );
 
-  res.status(201).json({ basketItem });
+  if (!!dbBasketItem) {
+    // TODO: change to 200 and json {msg: "Item already in Basket."}
+    res.status(400).send();
+  }
+
+  const correspondingItem = items.find((item) => item.id === Number(itemId));
+
+  const newBasketItem = {
+    ...correspondingItem,
+    id: userBasket.length + 1,
+    itemId: correspondingItem.id,
+    qty: 1,
+    createdAt: Date.now(),
+  };
+  userBasket = [newBasketItem, ...userBasket];
+
+  res.status(201).json({ basketItem: newBasketItem });
 });
 
 app.get("/api/items", (req, res) => {

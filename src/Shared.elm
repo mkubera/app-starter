@@ -107,6 +107,13 @@ type alias Msg =
 update : Route () -> Msg -> Model -> ( Model, Effect Msg )
 update route msg model =
     case msg of
+        Shared.Msg.ClearBasket ->
+            ( { model | userBasket = [] }
+            , Effect.batch
+                [ Effect.saveSuccessNotification { successString = "Your Basket was cleared! 👍" }
+                ]
+            )
+
         Shared.Msg.IncrementBasketItem { id } ->
             let
                 newBasket =
@@ -134,10 +141,11 @@ update route msg model =
                                 else
                                     basketItem
                             )
-                        -- |> List.filter
-                        --     (\basketItem ->
-                        --         basketItem.qty > 0
-                        --     )
+
+                -- |> List.filter
+                --     (\basketItem ->
+                --         basketItem.qty > 0
+                --     )
             in
             ( { model | userBasket = newBasket }, Effect.none )
 
