@@ -52,14 +52,14 @@ type Effect msg
 -- ADDED
 
 
-getBasket : { userBasket : List Int } -> Effect msg
+getBasket : { userBasket : List Shared.Model.BasketItem } -> Effect msg
 getBasket { userBasket } =
     SendSharedMsg (Shared.Msg.SaveBasket { basket = userBasket })
 
 
-addToBasket : { id : Int } -> Effect msg
-addToBasket { id } =
-    SendSharedMsg (Shared.Msg.AddToBasket { id = id })
+addToBasket : { basketItem : Shared.Model.BasketItem } -> Effect msg
+addToBasket { basketItem } =
+    SendSharedMsg (Shared.Msg.AddToBasket { basketItem = basketItem })
 
 
 saveItems : { items : List Shared.Model.Item } -> Effect msg

@@ -14,8 +14,8 @@ own file, so they can be imported by `Effect.elm`
 
 -}
 type Msg
-    = SaveBasket { basket : List Int }
-    | AddToBasket { id : Int }
+    = SaveBasket { basket : List Shared.Model.BasketItem }
+    | AddToBasket { basketItem : Shared.Model.BasketItem }
     | ApiGetItemsResponse (Result Http.Error (List Shared.Model.Item))
     | SaveItems (List Shared.Model.Item)
     | UpdateUser Shared.Model.User

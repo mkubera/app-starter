@@ -71,7 +71,8 @@ init flagsResult route =
             , successNotification = Nothing
             , errorNotification = Nothing
             , items = []
-            , userBasket = [] -- List of ItemIds
+            , userBasket = []
+            , userItems = []
             }
 
         initEffects { apiUrl } =
@@ -113,8 +114,8 @@ update route msg model =
             , Effect.none
             )
 
-        Shared.Msg.AddToBasket { id } ->
-            ( { model | userBasket = id :: model.userBasket }
+        Shared.Msg.AddToBasket { basketItem } ->
+            ( { model | userBasket = basketItem :: model.userBasket }
             , Effect.none
             )
 

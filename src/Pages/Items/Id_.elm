@@ -73,23 +73,13 @@ init sharedModel () =
 
 
 type Msg
-    = ApiAddToBasketResponse (Result Http.Error Api.Basket.AddToBasketResponseData)
-    | AddToBasket { id : Int }
+    = AddToBasket { id : Int }
+    | ApiAddToBasketResponse (Result Http.Error Api.Basket.AddToBasketResponseData)
 
 
 update : Shared.Model.Model -> Msg -> Model -> ( Model, Effect Msg )
 update sharedModel msg model =
     case msg of
-        ApiAddToBasketResponse (Ok { id }) ->
-            ( model
-            , Effect.addToBasket { id = id }
-            )
-
-        ApiAddToBasketResponse (Err _) ->
-            ( model
-            , Effect.saveErrorNotification { errString = "Something went wrong." }
-            )
-
         AddToBasket { id } ->
             ( model
             , Api.Basket.add
@@ -98,6 +88,16 @@ update sharedModel msg model =
                 , apiUrl = sharedModel.apiUrl
                 , token = sharedModel.token |> Maybe.withDefault ""
                 }
+            )
+
+        ApiAddToBasketResponse (Ok { basketItem }) ->
+            ( model
+            , Effect.addToBasket { basketItem = basketItem }
+            )
+
+        ApiAddToBasketResponse (Err _) ->
+            ( model
+            , Effect.saveErrorNotification { errString = "Something went wrong." }
             )
 
 

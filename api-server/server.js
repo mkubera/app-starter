@@ -45,7 +45,7 @@ let items = [
     createdAt: Date.now(),
   },
 ];
-let userBasket = []; // ids of Items
+let userBasket = [];
 
 // HELPER FUNCTIONS
 const wait = (fn, ms = 1000) => setTimeout(fn, ms);
@@ -78,10 +78,30 @@ app.get("/api/users/:id/basket", middlewareAuthorizeUser, (req, res) => {
 });
 
 app.post("/api/basket/add", (req, res) => {
-  const { id } = req.body;
-  userBasket = [id, ...userBasket];
+  const { itemId } = req.body;
 
-  res.status(201).json({ id });
+  if (userBasket.find((basketItem) => basketItem.itemId === itemId)) {
+    userBasket = userBasket.map((baskeItem) =>
+      baskeItem.itemId === itemId
+        ? { ...baskeItem, qty: baskeItem.qty + 1 }
+        : baskeItem
+    );
+  } else {
+    const correspondingItem = items.find((item) => item.id === itemId);
+    const newBasketItem = {
+      ...correspondingItem,
+      id: userBasket.length + 1,
+      qty: 1,
+      createdAt: Date.now(),
+    };
+    userBasket = [newBasketItem, ...userBasket];
+  }
+
+  const basketItem = userBasket.find(
+    (basketItem) => basketItem.itemId === itemId
+  );
+
+  res.status(201).json({ basketItem });
 });
 
 app.get("/api/items", (req, res) => {

@@ -3,17 +3,14 @@ module Pages.Basket exposing (Model, Msg, page)
 import Components.Page.Header
 import Effect exposing (Effect)
 import Element exposing (..)
+import Element.Font as Font
+import FlatColors.TurkishPalette as Colors
 import Layouts
 import Page exposing (Page)
 import Route exposing (Route)
 import Shared
 import Shared.Model
 import View exposing (View)
-
-
-
--- TODO:
--- 1) UI basket (RUD)
 
 
 page : Shared.Model -> Route () -> Page Model Msg
@@ -74,16 +71,6 @@ subscriptions model =
 
 view : Shared.Model.Model -> Model -> View Msg
 view sharedModel model =
-    let
-        userBasket =
-            List.map
-                (\itemId ->
-                    List.filter (\item -> item.id == itemId) sharedModel.items
-                        |> List.head
-                        |> Maybe.withDefault Shared.dummyItem
-                )
-                sharedModel.userBasket
-    in
     { title = "Items"
     , attributes = []
     , element =
@@ -94,19 +81,32 @@ view sharedModel model =
             , padding 20
             ]
             [ Components.Page.Header.view "BASKET"
-            , viewBasket userBasket
+            , viewBasket sharedModel.userBasket
             ]
     }
 
 
 viewBasket userBasket =
-    column [] <|
+    -- TODO:
+    -- 1) UI basket (U+D)
+    column [ spacing 20 ] <|
         List.map
-            (\userBasketItem ->
+            (\{ id, name, price } ->
                 row
-                    [ onLeft (text "⚫ ")
+                    [ spacing 5
+                    , below <|
+                        el
+                            [ mouseOver [ alpha 1 ]
+                            , alpha 0
+                            , Font.size 14
+                            , Font.color Colors.shadowedSteel
+                            ]
+                        <|
+                            text "The moon icon is purely decorative. You Are Not Purchasing the Earth's Moon!! ☝"
                     ]
-                    [ text userBasketItem.name
+                    [ text <| "[id:" ++ String.fromInt id ++ "]🌗 "
+                    , text name
+                    , text (" (€" ++ String.fromFloat price ++ ")")
                     ]
             )
             userBasket

@@ -60,7 +60,7 @@ init sharedModel _ =
     ( { isLoggingOut = False }
     , Effect.batch
         [ Api.Basket.get
-            { onResponse = ApiGetBaskerResponse
+            { onResponse = ApiGetBasketResponse
             , userId = userId
             , apiUrl = sharedModel.apiUrl
             , token = sharedModel.token |> Maybe.withDefault ""
@@ -76,7 +76,7 @@ init sharedModel _ =
 type Msg
     = Logout
     | ApiLogoutResponse (Result Http.Error ())
-    | ApiGetBaskerResponse (Result Http.Error Api.Basket.GetBasketResponseData)
+    | ApiGetBasketResponse (Result Http.Error Api.Basket.GetBasketResponseData)
 
 
 update : Shared.Model.Model -> Msg -> Model -> ( Model, Effect Msg )
@@ -114,14 +114,14 @@ update sharedModel msg model =
                 { errString = "Something went wrong. Please try again." }
             )
 
-        ApiGetBaskerResponse (Ok userBasket) ->
+        ApiGetBasketResponse (Ok userBasket) ->
             ( model
             , Effect.batch
                 [ Effect.getBasket { userBasket = userBasket }
                 ]
             )
 
-        ApiGetBaskerResponse (Err _) ->
+        ApiGetBasketResponse (Err _) ->
             ( model
             , Effect.saveErrorNotification
                 { errString = "Something went wrong. Please try again." }

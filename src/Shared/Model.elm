@@ -25,6 +25,20 @@ type alias Item =
     }
 
 
+type alias BasketItem =
+    { id : Int
+    , itemId : Int
+    , name : String
+    , price : Float
+    , qty : Int
+    , createdAt : Int
+    }
+
+
+type alias UserItem =
+    BasketItem
+
+
 type alias Model =
     { token : Maybe String
     , user : Maybe User
@@ -32,5 +46,6 @@ type alias Model =
     , successNotification : Maybe String
     , errorNotification : Maybe String
     , items : List Item
-    , userBasket : List Int -- List of ItemIds
+    , userBasket : List BasketItem
+    , userItems : List UserItem
     }

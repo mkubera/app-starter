@@ -5,6 +5,7 @@ import Effect exposing (Effect)
 import Http
 import Json.Decode as D
 import Json.Encode as E
+import Shared.Model
 
 
 
@@ -12,12 +13,12 @@ import Json.Encode as E
 
 
 type alias GetBasketResponseData =
-    List Int
+    List Shared.Model.BasketItem
 
 
 getBasketresponseDecoder : D.Decoder GetBasketResponseData
 getBasketresponseDecoder =
-    D.list D.int
+    D.list basketItemDecoder
 
 
 get :
@@ -51,13 +52,25 @@ get { onResponse, userId, apiUrl, token } =
 
 
 type alias AddToBasketResponseData =
-    { id : Int }
+    { basketItem : Shared.Model.BasketItem }
 
 
 addToBasketResponseDecoder : D.Decoder AddToBasketResponseData
 addToBasketResponseDecoder =
     D.map AddToBasketResponseData
+        (D.field "basketItem" basketItemDecoder)
+
+
+basketItemDecoder : D.Decoder Shared.Model.BasketItem
+basketItemDecoder =
+    D.map6
+        Shared.Model.BasketItem
         (D.field "id" D.int)
+        (D.field "itemId" D.int)
+        (D.field "name" D.string)
+        (D.field "price" D.float)
+        (D.field "qty" D.int)
+        (D.field "createdAt" D.int)
 
 
 add :
