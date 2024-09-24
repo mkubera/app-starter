@@ -61,6 +61,7 @@ type Msg
     = IncrementItem { id : Int }
     | DecrementItem { id : Int }
     | ClearBasket
+    | Pay
     | ApiIncrementItemResponse (Result Http.Error { id : Int })
     | ApiDecrementItemResponse (Result Http.Error { id : Int })
     | ApiClearBasketResponse (Result Http.Error ())
@@ -102,6 +103,11 @@ update sharedModel msg model =
                     , token = sharedModel.token |> Maybe.withDefault ""
                     }
                 ]
+            )
+
+        Pay ->
+            ( model
+            , Effect.batch []
             )
 
         ApiIncrementItemResponse (Ok { id }) ->
@@ -165,6 +171,7 @@ view sharedModel model =
                 ]
             , viewBasketTotal sharedModel.userBasket
             , viewBasketItems sharedModel.userBasket
+            , viewBasketPayBtn
             ]
     }
 
@@ -270,12 +277,24 @@ viewBasketClear =
         [ centerX
         , Background.color Colors.radiantYellow
         , alpha 0.8
-
-        -- , Font.italic
         , Font.size 15
         , padding 8
         , Border.rounded 5
         ]
         [ Input.button []
             { onPress = Just ClearBasket, label = text "🌑" }
+        ]
+
+
+viewBasketPayBtn : Element Msg
+viewBasketPayBtn =
+    row
+        [ centerX
+        , Background.color Colors.radiantYellow
+        , Font.size 18
+        , padding 10
+        , Border.rounded 5
+        ]
+        [ Input.button []
+            { onPress = Just Pay, label = text "Payment ➡" }
         ]
