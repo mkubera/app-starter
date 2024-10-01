@@ -14,6 +14,7 @@ module Shared exposing
 -}
 
 import Api.Basket
+import Api.Categories
 import Api.Items
 import Dict
 import Effect exposing (Effect)
@@ -32,6 +33,7 @@ dummyUser =
 dummyItem : Shared.Model.Item
 dummyItem =
     { id = 0
+    , categoryId = 0
     , name = ""
     , price = 0
     , qty = 0
@@ -71,7 +73,12 @@ init flagsResult route =
             , apiUrl = apiUrl
             , successNotification = Nothing
             , errorNotification = Nothing
+
+            -- COMMERCIAL DATA
             , items = []
+            , categories = []
+
+            -- USER-OWNED DATA
             , userBasket = []
             , userItems = []
             , modal = Nothing
@@ -79,7 +86,11 @@ init flagsResult route =
 
         initEffects { apiUrl } =
             Effect.batch
-                [ Api.Items.getAll
+                [ Api.Categories.getAll
+                    { onResponse = Shared.Msg.ApiGetCategoriesResponse
+                    , apiUrl = apiUrl
+                    }
+                , Api.Items.getAll
                     { onResponse = Shared.Msg.ApiGetItemsResponse
                     , apiUrl = apiUrl
                     }
@@ -171,6 +182,24 @@ update route msg model =
 
         Shared.Msg.AddToBasket { basketItem } ->
             ( { model | userBasket = basketItem :: model.userBasket }
+            , Effect.none
+            )
+
+        Shared.Msg.ApiGetCategoriesResponse (Ok categories) ->
+            ( model
+            , Effect.saveCategories { categories = categories }
+            )
+
+        Shared.Msg.ApiGetCategoriesResponse (Err _) ->
+            ( model
+            , Effect.saveErrorNotification
+                { errString = "Something went wrong." }
+            )
+
+        Shared.Msg.SaveCategories categories ->
+            ( { model
+                | categories = categories
+              }
             , Effect.none
             )
 

@@ -6,7 +6,7 @@ module Effect exposing
     , pushRoutePath, replaceRoutePath
     , loadExternalUrl, back
     , map, toCmd
-    , addToBasket, clearBasket, clearErrorNotification, clearSuccessNotification, decrementBasketItemQty, getBasket, incrementBasketItemQty, login, logout, saveErrorNotification, saveItems, saveSuccessNotification, toggleModal, updateUser
+    , addToBasket, clearBasket, clearErrorNotification, clearSuccessNotification, decrementBasketItemQty, getBasket, incrementBasketItemQty, login, logout, saveCategories, saveErrorNotification, saveItems, saveSuccessNotification, toggleModal, updateUser
     )
 
 {-|
@@ -52,6 +52,7 @@ type Effect msg
 -- ADDED
 
 
+toggleModal : { modal : Maybe Shared.Model.Modal } -> Effect msg
 toggleModal { modal } =
     SendSharedMsg (Shared.Msg.ToggleModal { modal = modal })
 
@@ -79,6 +80,11 @@ getBasket { userBasket } =
 addToBasket : { basketItem : Shared.Model.BasketItem } -> Effect msg
 addToBasket { basketItem } =
     SendSharedMsg (Shared.Msg.AddToBasket { basketItem = basketItem })
+
+
+saveCategories : { categories : List Shared.Model.Category } -> Effect msg
+saveCategories { categories } =
+    SendSharedMsg (Shared.Msg.SaveCategories categories)
 
 
 saveItems : { items : List Shared.Model.Item } -> Effect msg

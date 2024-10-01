@@ -1,31 +1,27 @@
-module Api.Items exposing (..)
-
--- import Json.Encode as E
+module Api.Categories exposing (..)
 
 import Effect exposing (Effect)
 import Http
 import Json.Decode as D
-import Shared.Model exposing (Item)
+import Shared.Model
 
 
 type alias ResponseData =
-    List Shared.Model.Item
+    List Shared.Model.Category
 
 
 responseDecoder : D.Decoder ResponseData
 responseDecoder =
-    D.list itemDecoder
+    D.list categoryDecoder
 
 
-itemDecoder : D.Decoder Shared.Model.Item
-itemDecoder =
-    D.map6
-        Shared.Model.Item
+categoryDecoder : D.Decoder Shared.Model.Category
+categoryDecoder =
+    D.map4
+        Shared.Model.Category
         (D.field "id" D.int)
-        (D.field "categoryId" D.int)
         (D.field "name" D.string)
-        (D.field "price" D.float)
-        (D.field "qty" D.int)
+        (D.field "description" D.string)
         (D.field "createdAt" D.int)
 
 
@@ -39,7 +35,7 @@ getAll { onResponse, apiUrl } =
         cmd : Cmd msg
         cmd =
             Http.get
-                { url = apiUrl ++ "/items"
+                { url = apiUrl ++ "/categories"
                 , expect = Http.expectJson onResponse responseDecoder
                 }
     in

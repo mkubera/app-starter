@@ -10,43 +10,33 @@ const DUMMY_USER = { id: 0, email: "" };
 const USER = { id: 1, email: "user@world.free" };
 const TOKEN = "secret-token";
 const MAGIC_TOKEN = "2MDZQR";
-let items = [
+
+let categories = [
   {
     id: 1,
-    name: "drop EP digital",
-    price: 5.55,
-    qty: 12,
-    createdAt: Date.now(),
-  },
-  {
-    id: 2,
-    name: "drop LE tee #1",
-    price: 5.55,
-    qty: 12,
-    createdAt: Date.now(),
-  },
-  {
-    id: 3,
-    name: "drop EP LE set",
-    price: 5.55,
-    qty: 12,
-    createdAt: Date.now(),
-  },
-  {
-    id: 4,
-    name: "drop EP CD",
-    price: 5.55,
-    qty: 12,
-    createdAt: Date.now(),
-  },
-  {
-    id: 5,
-    name: "drop LE tee #2",
-    price: 19.13,
-    qty: 12,
+    name: "drop ep (25/12/2024)",
+    description: "",
     createdAt: Date.now(),
   },
 ];
+
+const initItem = (id, categoryId, name) => ({
+  id,
+  categoryId,
+  name,
+  price: 5.55,
+  qty: 12,
+  createdAt: Date.now(),
+});
+
+let items = [
+  initItem(1, 1, "drop ep digital"),
+  initItem(2, 1, "drop ep physical cd"),
+  initItem(3, 1, "drop ep tee 'ocean'"),
+  initItem(4, 1, "drop ep tee 'return'"),
+  initItem(5, 1, "drop ep limited-edition set"),
+];
+
 let userBasket = [];
 
 // HELPER FUNCTIONS
@@ -179,6 +169,10 @@ app.post("/api/basket/add", (req, res) => {
   req.userBasket = [...req.userBasket, newBasketItem];
 
   res.status(201).json({ basketItem: newBasketItem });
+});
+
+app.get("/api/categories", (req, res) => {
+  res.status(200).json(categories);
 });
 
 app.get("/api/items", (req, res) => {

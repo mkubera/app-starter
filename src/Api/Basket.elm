@@ -63,9 +63,10 @@ addToBasketResponseDecoder =
 
 basketItemDecoder : D.Decoder Shared.Model.BasketItem
 basketItemDecoder =
-    D.map6
+    D.map7
         Shared.Model.BasketItem
         (D.field "id" D.int)
+        (D.field "categoryId" D.int)
         (D.field "itemId" D.int)
         (D.field "name" D.string)
         (D.field "price" D.float)

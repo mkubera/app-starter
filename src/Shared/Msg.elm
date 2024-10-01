@@ -22,6 +22,8 @@ type Msg
     | SaveBasket { basket : List Shared.Model.BasketItem }
     | AddToBasket { basketItem : Shared.Model.BasketItem }
       -- ITEMS
+    | ApiGetCategoriesResponse (Result Http.Error (List Shared.Model.Category))
+    | SaveCategories (List Shared.Model.Category)
     | ApiGetItemsResponse (Result Http.Error (List Shared.Model.Item))
     | SaveItems (List Shared.Model.Item)
       -- USER

@@ -1,5 +1,6 @@
 module Layouts.Main.Guest exposing (Model, Msg, Props, layout)
 
+import Components.Nav.Categories
 import Components.NavLink
 import Effect exposing (Effect)
 import Element exposing (..)
@@ -10,6 +11,7 @@ import Layouts.Main
 import Route exposing (Route)
 import Route.Path
 import Shared
+import Shared.Model
 import View exposing (View)
 
 
@@ -26,7 +28,7 @@ layout props sharedModel route =
     Layout.new
         { init = init
         , update = update
-        , view = view
+        , view = view sharedModel
         , subscriptions = subscriptions
         }
         |> Layout.withParentProps {}
@@ -73,20 +75,20 @@ subscriptions model =
 -- VIEW
 
 
-view : { toContentMsg : Msg -> contentMsg, content : View contentMsg, model : Model } -> View contentMsg
-view { toContentMsg, model, content } =
+view : Shared.Model.Model -> { toContentMsg : Msg -> contentMsg, content : View contentMsg, model : Model } -> View contentMsg
+view sharedModel { toContentMsg, model, content } =
     { title = content.title ++ " | App Starter"
     , attributes = []
     , element =
         column [ width fill, height fill ]
-            [ viewNavbar model
+            [ viewNavbar sharedModel
             , row [ centerX, centerY ] [ content.element ]
             ]
     }
 
 
-viewNavbar : Model -> Element msg
-viewNavbar model =
+viewNavbar : Shared.Model.Model -> Element msg
+viewNavbar sharedModel =
     row
         [ spaceEvenly
         , Background.color (rgb255 150 150 150)
@@ -94,6 +96,7 @@ viewNavbar model =
         , padding 20
         ]
         [ row [] [ Components.NavLink.view Route.Path.Home_ ]
+        , Components.Nav.Categories.view sharedModel.categories
         , row [ spacing 20 ]
             [ Components.NavLink.view Route.Path.Items
             , Components.NavLink.view Route.Path.Basket

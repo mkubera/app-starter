@@ -17,7 +17,7 @@ import Layouts
 import Page exposing (Page)
 import Route exposing (Route)
 import Route.Path
-import Shared
+import Shared exposing (dummyItem)
 import Shared.Model
 import View exposing (View)
 
@@ -116,10 +116,6 @@ subscriptions model =
 view : Shared.Model.Model -> Int -> Model -> View Msg
 view sharedModel itemId model =
     let
-        dummyItem : Shared.Model.Item
-        dummyItem =
-            { id = 0, name = "", price = 0, qty = 0, createdAt = 0 }
-
         item : Shared.Model.Item
         item =
             sharedModel.items
