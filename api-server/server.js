@@ -1,6 +1,8 @@
 import express from "express";
 import logger from "morgan";
 import cors from "cors";
+// TODO: download pkg
+// import session from "express-session";
 const app = express();
 
 // DATA (DUMMY DB)
@@ -45,9 +47,7 @@ let items = [
     createdAt: Date.now(),
   },
 ];
-let userBasket = [
-  { ...items[0], itemId: items[0].id, id: 1, qty: 1, createdAt: Date.now() },
-];
+let userBasket = [];
 
 // HELPER FUNCTIONS
 const wait = (fn, ms = 250) => setTimeout(fn, ms);
@@ -61,18 +61,46 @@ const middlewareAuthorizeUser = (req, res, next) => {
     res.status(403).send();
   }
 };
+const middlewareAddUserBasket = (req, res, next) => {
+  if (!req.userBasket) {
+    const initBasket = [
+      {
+        ...items[0],
+        id: 1,
+        itemId: items[0].id,
+        qty: 1,
+        createdAt: Date.now(),
+      },
+    ];
+    req.userBasket = initBasket;
+  }
+
+  next();
+};
 
 // APP-GLOBAL MIDDLEWARE
 app.use(logger("tiny"));
+// app.use(
+//   session({
+//     secret: "session-secret-ifd7f9d7fdh3kfdfFD$#",
+//     resave: false,
+//     saveUninitialized: true,
+//     cookie: { secure: !true },
+//   })
+// );
 app.use(express.json());
 app.use(cors());
+app.use(middlewareAddUserBasket);
 
 // API: ITEMS + BASKET
 
 app.delete("/api/basket", (req, res) => {
-  userBasket = [];
+  req.userBasket = req.userBasket.map((basketItem) => ({
+    ...basketItem,
+    qty: 0,
+  }));
 
-  res.status(200).send();
+  res.status(200).json(req.userBasket);
 });
 
 app.put(
@@ -81,11 +109,14 @@ app.put(
   (req, res) => {
     const { id } = req.params;
 
-    userBasket = userBasket.map((basketItem) =>
+    req.userBasket = req.userBasket.map((basketItem) =>
       basketItem.id === Number(id)
         ? { ...basketItem, qty: basketItem.qty + 1 }
         : basketItem
     );
+
+    console.log("INCREMENT");
+    console.log(req.userBasket);
 
     res.status(200).json({ id: Number(id) });
   }
@@ -97,20 +128,19 @@ app.put(
   (req, res) => {
     const { id } = req.params;
 
-    console.log(userBasket);
+    console.log(req.userBasket);
 
-    if (userBasket.find((basketItem) => basketItem.id === Number(id))) {
-      userBasket = userBasket.map((basketItem) =>
+    if (req.userBasket.find((basketItem) => basketItem.id === Number(id))) {
+      req.userBasket = req.userBasket.map((basketItem) =>
         basketItem.id === Number(id)
           ? { ...basketItem, qty: basketItem.qty - 1 }
           : basketItem
       );
       // .filter((basketItem) => basketItem.qty > 0);
+      res.status(200).json({ id: Number(id) });
     } else {
       res.status(403).send(`BasketItem of id ${id} doesn't exist.`);
     }
-
-    res.status(200).json({ id: Number(id) });
   }
 );
 
@@ -118,7 +148,7 @@ app.get("/api/users/:id/basket", middlewareAuthorizeUser, (req, res) => {
   const { id } = req.params;
 
   if (Number(id) === USER.id) {
-    res.status(200).json(userBasket);
+    res.status(200).json(req.userBasket);
   } else {
     res.status(403).send();
   }
@@ -127,7 +157,7 @@ app.get("/api/users/:id/basket", middlewareAuthorizeUser, (req, res) => {
 app.post("/api/basket/add", (req, res) => {
   const { itemId } = req.body;
 
-  const dbBasketItem = userBasket.find(
+  const dbBasketItem = req.userBasket.find(
     (basketItem) => basketItem.itemId === Number(itemId)
   );
 
@@ -140,12 +170,13 @@ app.post("/api/basket/add", (req, res) => {
 
   const newBasketItem = {
     ...correspondingItem,
-    id: userBasket.length + 1,
+    id: req.userBasket.length + 1,
     itemId: correspondingItem.id,
     qty: 1,
     createdAt: Date.now(),
   };
-  userBasket = [newBasketItem, ...userBasket];
+
+  req.userBasket = [...req.userBasket, newBasketItem];
 
   res.status(201).json({ basketItem: newBasketItem });
 });

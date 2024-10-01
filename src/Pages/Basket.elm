@@ -9,7 +9,6 @@ import Element.Border as Border
 import Element.Font as Font
 import Element.Input as Input
 import FlatColors.TurkishPalette as Colors
-import Html exposing (q)
 import Http
 import Layouts
 import Page exposing (Page)
@@ -29,7 +28,7 @@ page sharedModel route =
         }
         |> Page.withLayout
             (\model ->
-                case sharedModel.user of
+                case sharedModel.token of
                     Just _ ->
                         Layouts.Main_User {}
 
@@ -64,7 +63,9 @@ type Msg
     | Pay
     | ApiIncrementItemResponse (Result Http.Error { id : Int })
     | ApiDecrementItemResponse (Result Http.Error { id : Int })
-    -- | ApiClearBasketResponse (Result Http.Error ())
+
+
+
 
 
 update : Shared.Model.Model -> Msg -> Model -> ( Model, Effect Msg )
@@ -100,12 +101,6 @@ update sharedModel msg model =
                 [ Effect.toggleModal
                     { modal = Just Shared.Model.ClearBasketConfirmation }
                 ]
-              -- [ Api.Basket.clear
-              --     { onResponse = ApiClearBasketResponse
-              --     , apiUrl = sharedModel.apiUrl
-              --     , token = sharedModel.token |> Maybe.withDefault ""
-              --     }
-              -- ]
             )
 
         Pay ->
@@ -135,16 +130,6 @@ update sharedModel msg model =
             ( model
             , Effect.saveErrorNotification { errString = "Something went wrong." }
             )
-
-        -- ApiClearBasketResponse (Ok _) ->
-        --     ( model
-        --     , Effect.clearBasket
-        --     )
-
-        -- ApiClearBasketResponse (Err _) ->
-        --     ( model
-        --     , Effect.saveErrorNotification { errString = "Something went wrong." }
-        --     )
 
 
 

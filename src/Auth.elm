@@ -15,8 +15,8 @@ type alias User =
 {-| Called before an auth-only page is loaded.
 -}
 onPageLoad : Shared.Model -> Route () -> Auth.Action.Action User
-onPageLoad shared route =
-    case shared.token of
+onPageLoad sharedModel route =
+    case sharedModel.token of
         Just token ->
             Auth.Action.loadPageWithUser { token = token }
 
@@ -31,5 +31,5 @@ onPageLoad shared route =
 {-| Renders whenever `Auth.Action.loadCustomPage` is returned from `onPageLoad`.
 -}
 viewCustomPage : Shared.Model -> Route () -> View Never
-viewCustomPage shared route =
+viewCustomPage sharedModel route =
     View.fromString "Loading..."

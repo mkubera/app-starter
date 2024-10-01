@@ -16,7 +16,7 @@ own file, so they can be imported by `Effect.elm`
 type Msg
     = --BASKET
       ClearBasket
-      | ApiClearBasketResponse (Result Http.Error ())
+    | ApiClearBasketResponse (Result Http.Error (List Shared.Model.BasketItem))
     | IncrementBasketItem { id : Int }
     | DecrementBasketItem { id : Int }
     | SaveBasket { basket : List Shared.Model.BasketItem }

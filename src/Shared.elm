@@ -13,6 +13,7 @@ module Shared exposing
 
 -}
 
+import Api.Basket
 import Api.Items
 import Dict
 import Effect exposing (Effect)
@@ -21,7 +22,6 @@ import Route exposing (Route)
 import Route.Path
 import Shared.Model
 import Shared.Msg
-import Api.Basket
 
 
 dummyUser : Shared.Model.User
@@ -112,17 +112,16 @@ update route msg model =
         Shared.Msg.ClearBasket ->
             ( model
             , Effect.batch
-                [ 
-                    Api.Basket.clear
-                  { onResponse = Shared.Msg.ApiClearBasketResponse
-                  , apiUrl = model.apiUrl
-                  , token = model.token |> Maybe.withDefault ""
-                  }
+                [ Api.Basket.clear
+                    { onResponse = Shared.Msg.ApiClearBasketResponse
+                    , apiUrl = model.apiUrl
+                    , token = model.token |> Maybe.withDefault ""
+                    }
                 ]
             )
 
-        Shared.Msg.ApiClearBasketResponse (Ok _) ->
-            ( { model | userBasket = [] }
+        Shared.Msg.ApiClearBasketResponse (Ok userBasket) ->
+            ( { model | userBasket = userBasket }
             , Effect.batch
                 [ Effect.saveSuccessNotification { successString = "Your Basket was cleared! 👍" }
                 ]
@@ -160,7 +159,6 @@ update route msg model =
                                 else
                                     basketItem
                             )
-
             in
             ( { model | userBasket = newBasket }, Effect.none )
 

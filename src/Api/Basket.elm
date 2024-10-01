@@ -16,8 +16,8 @@ type alias GetBasketResponseData =
     List Shared.Model.BasketItem
 
 
-getBasketresponseDecoder : D.Decoder GetBasketResponseData
-getBasketresponseDecoder =
+getBasketResponseDecoder : D.Decoder GetBasketResponseData
+getBasketResponseDecoder =
     D.list basketItemDecoder
 
 
@@ -39,7 +39,7 @@ get { onResponse, userId, apiUrl, token } =
                     ]
                 , url = apiUrl ++ "/users/" ++ String.fromInt userId ++ "/basket"
                 , body = Http.emptyBody
-                , expect = Http.expectJson onResponse getBasketresponseDecoder
+                , expect = Http.expectJson onResponse getBasketResponseDecoder
                 , timeout = Nothing
                 , tracker = Nothing
                 }
@@ -194,8 +194,17 @@ decrementItem { onResponse, id, apiUrl, token } =
 -- CLEAR BASKET
 
 
+type alias ClearResponseData =
+    List Shared.Model.BasketItem
+
+
+clearResponseDecoder : D.Decoder (List Shared.Model.BasketItem)
+clearResponseDecoder =
+    D.list basketItemDecoder
+
+
 clear :
-    { onResponse : Result Http.Error () -> msg
+    { onResponse : Result Http.Error ClearResponseData -> msg
     , apiUrl : String
     , token : String
     }
@@ -209,7 +218,7 @@ clear { onResponse, apiUrl, token } =
                 , headers = [ Api.Headers.auth token ]
                 , url = apiUrl ++ "/basket"
                 , body = Http.emptyBody
-                , expect = Http.expectWhatever onResponse
+                , expect = Http.expectJson onResponse clearResponseDecoder
                 , timeout = Nothing
                 , tracker = Nothing
                 }

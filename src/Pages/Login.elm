@@ -116,7 +116,7 @@ update sharedModel msg model =
             , Effect.batch
                 [ Effect.clearErrorNotification
                 , Effect.saveSuccessNotification
-                    { successString = "We sent a magic token to your email address." }
+                    { successString = "A magic token was sent to your email address. Copy it and paste into the field below." }
                 , Effect.pushRoute
                     { path = Route.Path.LoginMagicToken
                     , query = Dict.empty
@@ -154,10 +154,14 @@ view model =
     { title = "Login"
     , attributes = []
     , element =
-        column [ centerX, centerY ]
+        column
+            [ centerX
+            , centerY
+            , width <| maximum 600 fill
+            ]
             [ Components.Form.init
                 { element = column
-                , attributes = [ width (px 600), spacing 10 ]
+                , attributes = [ width <| maximum 600 fill, spacing 10 ]
                 , children =
                     [ Components.Page.Header.view "LOGIN (part 1/2)"
 
@@ -165,7 +169,7 @@ view model =
                     , Components.Form.Input.init
                         { field = Email
                         , labelText = "email"
-                        , attributes = []
+                        , attributes = [ width <| maximum 600 fill ]
                         , value = model.email
                         , msg = SaveEmail
                         }
