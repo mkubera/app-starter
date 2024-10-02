@@ -1,6 +1,7 @@
 module Pages.Basket exposing (Model, Msg, page)
 
 import Api.Basket
+import Components.Basket exposing (viewBasketTotal)
 import Components.Page.Header
 import Effect exposing (Effect)
 import Element exposing (..)
@@ -13,6 +14,7 @@ import Http
 import Layouts
 import Page exposing (Page)
 import Route exposing (Route)
+import Route.Path
 import Shared
 import Shared.Model
 import View exposing (View)
@@ -60,7 +62,8 @@ type Msg
     = IncrementItem { id : Int }
     | DecrementItem { id : Int }
     | ClearBasket
-    | Pay
+    
+    | ContinueToStep2
     | ApiIncrementItemResponse (Result Http.Error { id : Int })
     | ApiDecrementItemResponse (Result Http.Error { id : Int })
 
@@ -100,11 +103,12 @@ update sharedModel msg model =
                 ]
             )
 
-        Pay ->
+        
+
+        ContinueToStep2 ->
             ( model
             , Effect.batch
-                [ Effect.toggleModal
-                    { modal = Just Shared.Model.PayConfirmation }
+                [ Effect.pushRoutePath Route.Path.BasketStep2
                 ]
             )
 
@@ -153,13 +157,14 @@ view sharedModel model =
             , spacing 20
             , padding 20
             ]
-            [ row [ centerX, spacing 5 ]
+            [ Components.Basket.viewTrail { basketStep = 1 }
+            , row [ centerX, spacing 5 ]
                 [ Components.Page.Header.view "BASKET"
-                , viewBasketClear
+                , viewBasketClearBtn
                 ]
-            , viewBasketTotal sharedModel.userBasket
+            , Components.Basket.viewBasketTotal sharedModel.userBasket
             , viewBasketItems sharedModel.userBasket
-            , viewBasketPayBtn
+            , Components.Basket.viewBasketProceedBtn { onPress = Just ContinueToStep2, labelText = "Continue" }
             ]
     }
 
@@ -200,6 +205,10 @@ viewBasketItems userBasket =
             userBasket
 
 
+
+-- BTNS
+
+
 viewBasketIncrementItemBtn : { id : Int } -> Element Msg
 viewBasketIncrementItemBtn { id } =
     Input.button
@@ -233,34 +242,8 @@ viewBasketDecrementItemBtn { id, qty } =
         }
 
 
-viewBasketTotal : List Shared.Model.UserItem -> Element msg
-viewBasketTotal userBasket =
-    let
-        sumOfItems : Float
-        sumOfItems =
-            List.foldl (\{ qty, price } acc -> acc + (toFloat qty * price)) 0 userBasket
-
-        totalTxt : String
-        totalTxt =
-            String.fromFloat sumOfItems
-    in
-    row
-        [ centerX
-        , Font.color Colors.lightIndigo
-        , alpha 0.8
-        , Font.italic
-        , Font.size 18
-        , Border.width 1
-        , Border.solid
-        , Border.color Colors.lightIndigo
-        , padding 10
-        ]
-        [ text <| "€" ++ totalTxt
-        ]
-
-
-viewBasketClear : Element Msg
-viewBasketClear =
+viewBasketClearBtn : Element Msg
+viewBasketClearBtn =
     row
         [ centerX
         , Background.color Colors.radiantYellow
@@ -274,15 +257,5 @@ viewBasketClear =
         ]
 
 
-viewBasketPayBtn : Element Msg
-viewBasketPayBtn =
-    row
-        [ centerX
-        , Background.color Colors.radiantYellow
-        , Font.size 18
-        , padding 10
-        , Border.rounded 5
-        ]
-        [ Input.button []
-            { onPress = Just Pay, label = text "Payment ➡" }
-        ]
+
+
