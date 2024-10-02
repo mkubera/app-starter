@@ -65,9 +65,6 @@ type Msg
     | ApiDecrementItemResponse (Result Http.Error { id : Int })
 
 
-
-
-
 update : Shared.Model.Model -> Msg -> Model -> ( Model, Effect Msg )
 update sharedModel msg model =
     case msg of
