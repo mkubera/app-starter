@@ -30,10 +30,10 @@ const initItem = (id, categoryId, name) => ({
 });
 
 let items = [
-  initItem(1, 1, "drop ep digital"),
-  initItem(2, 1, "drop ep physical cd"),
-  initItem(3, 1, "drop ep tee 'ocean'"),
-  initItem(4, 1, "drop ep tee 'return'"),
+  initItem(1, 1, "drop ep mini-poster"),
+  initItem(2, 1, "drop ep tee #1 'ocean'"),
+  initItem(3, 1, "drop ep tee #2 'return'"),
+  initItem(4, 1, "drop ep tee #3 'water'"),
   initItem(5, 1, "drop ep limited-edition set"),
 ];
 

@@ -1,6 +1,5 @@
 module Layouts.Main.Guest exposing (Model, Msg, Props, layout)
 
-import Components.Nav.Categories
 import Components.NavLink
 import Effect exposing (Effect)
 import Element exposing (..)
@@ -96,7 +95,6 @@ viewNavbar sharedModel =
         , padding 20
         ]
         [ row [] [ Components.NavLink.view Route.Path.Home_ ]
-        , Components.Nav.Categories.view sharedModel.categories
         , row [ spacing 20 ]
             [ Components.NavLink.view Route.Path.Items
             , Components.NavLink.view Route.Path.Basket
