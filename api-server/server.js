@@ -14,7 +14,19 @@ const MAGIC_TOKEN = "2MDZQR";
 let categories = [
   {
     id: 1,
-    name: "drop ep (25/12/2024)",
+    name: "Books",
+    description: "",
+    createdAt: Date.now(),
+  },
+  {
+    id: 2,
+    name: "Posters",
+    description: "",
+    createdAt: Date.now(),
+  },
+  {
+    id: 3,
+    name: "Tee Shirts",
     description: "",
     createdAt: Date.now(),
   },
@@ -30,11 +42,11 @@ const initItem = (id, categoryId, name) => ({
 });
 
 let items = [
-  initItem(1, 1, "drop ep mini-poster"),
-  initItem(2, 1, "drop ep tee #1 'ocean'"),
-  initItem(3, 1, "drop ep tee #2 'return'"),
-  initItem(4, 1, "drop ep tee #3 'water'"),
-  initItem(5, 1, "drop ep limited-edition set"),
+  initItem(1, 1, "Brave New World"),
+  initItem(2, 1, "1984"),
+  initItem(3, 2, "Jodorowsky's Dune"),
+  initItem(4, 3, "Cell the Shell"),
+  initItem(5, 3, "God please fuck my mind for good"),
 ];
 
 let userBasket = [];

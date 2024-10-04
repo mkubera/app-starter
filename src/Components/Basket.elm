@@ -16,21 +16,20 @@ viewTrail { basketStep } =
         columns =
             [ 1, 2, 3 ]
     in
-    row [] <|
+    row [ height (px 50) ] <|
         (columns
             |> List.map
                 (\columnNumber ->
                     let
-                        highlightingAttributes =
-                            [ Font.bold
-                            ]
+                        defaultAttributes =
+                            [ spacing 5 ]
 
                         attributes =
                             if basketStep == columnNumber then
-                                highlightingAttributes
+                                defaultAttributes ++ [ Font.bold ]
 
                             else
-                                []
+                                defaultAttributes ++ [ alpha 0.33 ]
 
                         headerText =
                             case columnNumber of
@@ -44,11 +43,34 @@ viewTrail { basketStep } =
                                     "Payment"
                     in
                     column attributes
-                        [ row [ centerX ] [ text (String.fromInt columnNumber) ]
+                        [ row
+                            [ centerX
+                            , Border.color (rgb255 100 100 100)
+                            , Border.solid
+                            , Border.width 1
+                            , Border.rounded 100
+                            , padding 10
+                            , width (px 40)
+                            , height (px 40)
+                            ]
+                            [ el [ centerX ] <| text (String.fromInt columnNumber) ]
                         , row [] [ text headerText ]
                         ]
                 )
-            |> List.intersperse (column [ padding 20 ] [ text "------" ])
+            |> List.intersperse
+                (column
+                    [ width (px 100)
+                    ]
+                    [ row
+                        [ height (px 1)
+                        , Background.color (rgb255 0 0 0)
+                        , paddingXY 30 0
+                        , alpha 0.33
+                        , centerX
+                        ]
+                        []
+                    ]
+                )
         )
 
 

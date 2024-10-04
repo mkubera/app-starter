@@ -1,6 +1,7 @@
 module Pages.Items exposing (Model, Msg, page)
 
 import Api.Items
+import Components.Items
 import Components.Link
 import Components.Page.Header
 import Dict
@@ -95,45 +96,6 @@ view sharedModel model =
             , padding 20
             ]
             [ Components.Page.Header.view "ITEMS"
-            , viewItems sharedModel.items
+            , Components.Items.view { items = sharedModel.items }
             ]
     }
-
-
-viewItems : List Shared.Model.Item -> Element msg
-viewItems items =
-    wrappedRow
-        [ width (fill |> maximum 620)
-        , centerX
-        , centerY
-        , spacingXY 10 10
-        ]
-    <|
-        List.map
-            (\item ->
-                Components.Link.view
-                    { routePath =
-                        Route.Path.Items_Id_ { id = item.id |> String.fromInt }
-                    , label =
-                        column
-                            [ width (px 300)
-                            , height (px 300)
-                            , Border.color Colors.balticSea
-                            , Border.solid
-                            , Border.width 2
-                            , Border.rounded 5
-                            , spacing 5
-                            , pointer
-                            , mouseOver
-                                [ alpha 0.4
-                                , Border.color Colors.radiantYellow
-                                , Font.color Colors.radiantYellow
-                                ]
-                            ]
-                            [ row [ centerX, centerY, Font.size 22, Font.bold ] [ text item.name ]
-                            , row [ centerX, centerY, Font.size 18 ] [ text ("€" ++ String.fromFloat item.price) ]
-                            , row [ centerX, centerY, Font.size 14 ] [ text (String.fromInt item.qty ++ " copies left") ]
-                            ]
-                    }
-            )
-            items

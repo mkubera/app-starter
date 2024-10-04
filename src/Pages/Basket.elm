@@ -62,7 +62,6 @@ type Msg
     = IncrementItem { id : Int }
     | DecrementItem { id : Int }
     | ClearBasket
-    
     | ContinueToStep2
     | ApiIncrementItemResponse (Result Http.Error { id : Int })
     | ApiDecrementItemResponse (Result Http.Error { id : Int })
@@ -72,28 +71,42 @@ update : Shared.Model.Model -> Msg -> Model -> ( Model, Effect Msg )
 update sharedModel msg model =
     case msg of
         IncrementItem { id } ->
-            ( model
-            , Effect.batch
-                [ Api.Basket.incrementItem
-                    { onResponse = ApiIncrementItemResponse
-                    , id = id
-                    , apiUrl = sharedModel.apiUrl
-                    , token = sharedModel.token |> Maybe.withDefault ""
-                    }
-                ]
-            )
+            case sharedModel.user of
+                Just _ ->
+                    ( model
+                    , Effect.batch
+                        [ Api.Basket.incrementItem
+                            { onResponse = ApiIncrementItemResponse
+                            , id = id
+                            , apiUrl = sharedModel.apiUrl
+                            , token = sharedModel.token |> Maybe.withDefault ""
+                            }
+                        ]
+                    )
+
+                Nothing ->
+                    ( model
+                    , Effect.incrementBasketItemQty { id = id }
+                    )
 
         DecrementItem { id } ->
-            ( model
-            , Effect.batch
-                [ Api.Basket.decrementItem
-                    { onResponse = ApiDecrementItemResponse
-                    , id = id
-                    , apiUrl = sharedModel.apiUrl
-                    , token = sharedModel.token |> Maybe.withDefault ""
-                    }
-                ]
-            )
+            case sharedModel.user of
+                Just _ ->
+                    ( model
+                    , Effect.batch
+                        [ Api.Basket.decrementItem
+                            { onResponse = ApiDecrementItemResponse
+                            , id = id
+                            , apiUrl = sharedModel.apiUrl
+                            , token = sharedModel.token |> Maybe.withDefault ""
+                            }
+                        ]
+                    )
+
+                Nothing ->
+                    ( model
+                    , Effect.decrementBasketItemQty { id = id }
+                    )
 
         ClearBasket ->
             ( model
@@ -102,8 +115,6 @@ update sharedModel msg model =
                     { modal = Just Shared.Model.ClearBasketConfirmation }
                 ]
             )
-
-        
 
         ContinueToStep2 ->
             ( model
@@ -255,7 +266,3 @@ viewBasketClearBtn =
         [ Input.button []
             { onPress = Just ClearBasket, label = text "🌑" }
         ]
-
-
-
-

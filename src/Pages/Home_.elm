@@ -1,5 +1,7 @@
 module Pages.Home_ exposing (Model, Msg, page)
 
+import Components.Categories
+import Components.Items
 import Components.Page.Header
 import Effect exposing (Effect)
 import Element exposing (..)
@@ -11,12 +13,12 @@ import View exposing (View)
 
 
 page : Shared.Model -> Route () -> Page Model Msg
-page shared route =
+page sharedModel route =
     Page.new
         { init = init
         , update = update
         , subscriptions = subscriptions
-        , view = view
+        , view = view sharedModel
         }
         |> Page.withLayout (\model -> Layouts.Main_Guest {})
 
@@ -66,12 +68,16 @@ subscriptions model =
 -- VIEW
 
 
-view : Model -> View Msg
-view model =
+view : Shared.Model -> Model -> View Msg
+view sharedModel model =
     { title = "Homepage"
     , attributes = []
     , element =
-        column []
-            [ Components.Page.Header.view "HOME"
+        column [ width fill ]
+            -- [ Components.Page.Header.view "HOME"
+            [ Components.Categories.view
+                { categories = sharedModel.categories
+                , items = sharedModel.items
+                }
             ]
     }

@@ -121,15 +121,20 @@ update : Route () -> Msg -> Model -> ( Model, Effect Msg )
 update route msg model =
     case msg of
         Shared.Msg.ClearBasket ->
-            ( model
-            , Effect.batch
-                [ Api.Basket.clear
-                    { onResponse = Shared.Msg.ApiClearBasketResponse
-                    , apiUrl = model.apiUrl
-                    , token = model.token |> Maybe.withDefault ""
-                    }
-                ]
-            )
+            case model.user of
+                Just _ ->
+                    ( model
+                    , Effect.batch
+                        [ Api.Basket.clear
+                            { onResponse = Shared.Msg.ApiClearBasketResponse
+                            , apiUrl = model.apiUrl
+                            , token = model.token |> Maybe.withDefault ""
+                            }
+                        ]
+                    )
+
+                Nothing ->
+                    ( { model | userBasket = [] }, Effect.none )
 
         Shared.Msg.ApiClearBasketResponse (Ok userBasket) ->
             ( { model | userBasket = userBasket }

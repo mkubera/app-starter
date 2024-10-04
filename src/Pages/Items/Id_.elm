@@ -1,10 +1,8 @@
 module Pages.Items.Id_ exposing (Model, Msg, page)
 
 import Api.Basket
-import Api.Items
 import Components.Link
 import Components.Page.Header
-import Dict
 import Effect exposing (Effect)
 import Element exposing (..)
 import Element.Background as Background
@@ -19,6 +17,7 @@ import Route exposing (Route)
 import Route.Path
 import Shared exposing (dummyItem)
 import Shared.Model
+import Utils
 import View exposing (View)
 
 
@@ -81,13 +80,26 @@ update : Shared.Model.Model -> Msg -> Model -> ( Model, Effect Msg )
 update sharedModel msg model =
     case msg of
         AddToBasket { itemId } ->
-            ( { model | isSubmitting = True }
-            , Api.Basket.add
-                { onResponse = ApiAddToBasketResponse
-                , itemId = itemId
-                , apiUrl = sharedModel.apiUrl
-                }
-            )
+            case sharedModel.user of
+                Just _ ->
+                    ( { model | isSubmitting = True }
+                    , Api.Basket.add
+                        { onResponse = ApiAddToBasketResponse
+                        , itemId = itemId
+                        , apiUrl = sharedModel.apiUrl
+                        }
+                    )
+
+                Nothing ->
+                    let
+                        newBasketItem =
+                            Utils.basketItemFromItemId
+                                { itemId = itemId
+                                , items = sharedModel.items
+                                , userBasket = sharedModel.userBasket
+                                }
+                    in
+                    ( model, Effect.addToBasket { basketItem = newBasketItem } )
 
         ApiAddToBasketResponse (Ok { basketItem }) ->
             ( { model | isSubmitting = False }
@@ -209,7 +221,19 @@ viewItem item =
         , centerY
         , spacingXY 10 10
         ]
-        [ row [ centerX, centerY, Font.size 22, Font.bold ] [ text item.name ]
-        , row [ centerX, centerY, Font.size 18 ] [ text ("€" ++ String.fromFloat item.price) ]
-        , row [ centerX, centerY, Font.size 14 ] [ text (String.fromInt item.qty ++ " copies left") ]
+        [ row [ centerX, centerY, Font.size 22, Font.bold ]
+            [ text item.name
+            ]
+        , row
+            [ centerX
+            , centerY
+            , Font.size 18
+            ]
+            [ text ("€" ++ String.fromFloat item.price) ]
+        , row
+            [ centerX
+            , centerY
+            , Font.size 14
+            ]
+            [ text (String.fromInt item.qty ++ " left") ]
         ]
