@@ -87,14 +87,13 @@ subscriptions model =
 
 view : Shared.Model.Model -> Model -> View Msg
 view sharedModel model =
-    { title = "Items"
+    { title = "Basket"
     , attributes = []
     , element =
         column
             [ width fill
             , height fill
-            , spacing 20
-            , padding 20
+            , spacing 50
             ]
             [ Components.Basket.viewTrail { basketStep = 3 }
             , row [ centerX, spacing 5 ]

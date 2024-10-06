@@ -4,7 +4,7 @@ import Api.Basket
 import Components.Basket exposing (viewBasketTotal)
 import Components.Page.Header
 import Design.Colors
-import Effect exposing (Effect)
+import Effect exposing (Effect, incrementBasketItemQty)
 import Element exposing (..)
 import Element.Background as Background
 import Element.Border as Border
@@ -160,7 +160,23 @@ subscriptions model =
 
 view : Shared.Model.Model -> Model -> View Msg
 view sharedModel model =
-    { title = "Items"
+    let
+        isBasketNotEmpty : Bool
+        isBasketNotEmpty =
+            sharedModel.userBasket
+                |> List.isEmpty
+                |> not
+
+        isUserLoggedIn : Bool
+        isUserLoggedIn =
+            case sharedModel.user of
+                Just _ ->
+                    True
+
+                Nothing ->
+                    False
+    in
+    { title = "Basket"
     , attributes = []
     , element =
         column
@@ -173,9 +189,21 @@ view sharedModel model =
                 [ Components.Page.Header.view "BASKET"
                 , viewBasketClearBtn
                 ]
-            , viewBasketItems sharedModel.userBasket
-            , Components.Basket.viewBasketTotal sharedModel.userBasket
-            , Components.Basket.viewBasketProceedBtn { onPress = Just ContinueToStep2, labelText = "Continue" }
+            , if isBasketNotEmpty then
+                viewBasketItems sharedModel.userBasket
+
+              else
+                row [ centerX, Font.italic ] [ text "Your basket is empty." ]
+            , if isBasketNotEmpty then
+                Components.Basket.viewBasketTotal sharedModel.userBasket
+
+              else
+                none
+            , if isBasketNotEmpty && isUserLoggedIn then
+                Components.Basket.viewBasketProceedBtn { onPress = Just ContinueToStep2, labelText = "Continue" }
+
+              else
+                row [ centerX, Font.italic ] [ text "Log in to proceed to Payment." ]
             ]
     }
 

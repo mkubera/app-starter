@@ -93,8 +93,7 @@ view sharedModel model =
         column
             [ width fill
             , height fill
-            , spacing 20
-            , padding 20
+            , spacing 50
             ]
             [ Components.Basket.viewTrail { basketStep = 2 }
             , row [ centerX, spacing 5 ]
