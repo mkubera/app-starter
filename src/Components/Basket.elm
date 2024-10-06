@@ -8,6 +8,7 @@ import Element.Font as Font
 import Element.Input as Input
 import Route.Path
 import Shared.Model
+import Utils
 
 
 viewTrail : { basketStep : Int } -> Element msg
@@ -80,8 +81,12 @@ viewBasketProceedBtn { onPress, labelText } =
         [ centerX
         , Background.color Design.Colors.secondary
         , Font.size 18
+        , Font.bold
         , padding 10
         , Border.rounded 5
+        , mouseOver
+            [ Background.color (Design.Colors.secondary |> Design.Colors.setAlpha 0.5)
+            ]
         ]
         [ Input.button []
             { onPress = onPress, label = text labelText }
@@ -107,21 +112,18 @@ viewBasketTotal userBasket =
         sumOfItems : Float
         sumOfItems =
             List.foldl (\{ qty, price } acc -> acc + (toFloat qty * price)) 0 userBasket
-
-        totalTxt : String
-        totalTxt =
-            String.fromFloat sumOfItems
     in
-    row
+    column
         [ centerX
         , Font.color Design.Colors.ternary
         , alpha 0.8
         , Font.italic
-        , Font.size 18
         , Border.width 1
         , Border.solid
         , Border.color Design.Colors.ternary
         , padding 10
+        , spacing 5
         ]
-        [ text <| "€" ++ totalTxt
+        [ row [ centerX, Font.size 14 ] [ text "total" ]
+        , row [ centerX, Font.size 18 ] [ text <| "€" ++ Utils.setDecimal sumOfItems 2 ]
         ]

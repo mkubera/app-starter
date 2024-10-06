@@ -195,7 +195,7 @@ update route msg model =
             )
 
         Shared.Msg.AddToBasket { basketItem } ->
-            ( { model | userBasket = basketItem :: model.userBasket }
+            ( { model | userBasket = basketItem :: model.userBasket |> List.reverse }
             , Effect.none
             )
 

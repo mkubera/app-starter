@@ -100,8 +100,8 @@ view sharedModel model =
             , row [ centerX, spacing 5 ]
                 [ Components.Page.Header.view "BASKET"
                 ]
-            , Components.Basket.viewBasketTotal sharedModel.userBasket
             , viewBasketItems sharedModel.userBasket
+            , Components.Basket.viewBasketTotal sharedModel.userBasket
             , row [ centerX, spacing 5 ]
                 [ Components.Basket.viewBasketBackBtn { to = Route.Path.Basket }
                 , Components.Basket.viewBasketProceedBtn { onPress = Just ContinueToStep3, labelText = "Continue" }
@@ -117,6 +117,7 @@ viewBasketItems userBasket =
             (\{ id, name, price, qty } ->
                 row
                     [ spacing 5
+
                     -- , below <|
                     --     el
                     --         [ mouseOver [ alpha 1 ]

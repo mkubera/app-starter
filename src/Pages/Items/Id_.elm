@@ -3,13 +3,13 @@ module Pages.Items.Id_ exposing (Model, Msg, page)
 import Api.Basket
 import Components.Link
 import Components.Page.Header
+import Design.Colors
 import Effect exposing (Effect)
 import Element exposing (..)
 import Element.Background as Background
 import Element.Border as Border
 import Element.Font as Font
 import Element.Input as Input
-import FlatColors.TurkishPalette as Colors
 import Http
 import Layouts
 import Page exposing (Page)
@@ -149,13 +149,12 @@ view sharedModel itemId model =
                 { routePath = Route.Path.Items
                 , label = text "<- back to Items"
                 }
-            , Components.Page.Header.view "ITEM"
+            , viewItem item
             , viewAddToBasket
                 { id = item.id
                 , userBasket = sharedModel.userBasket
                 , isSubmitting = model.isSubmitting
                 }
-            , viewItem item
             ]
     }
 
@@ -174,27 +173,28 @@ viewAddToBasket { id, userBasket, isSubmitting } =
     if itemAlreadyInBasket then
         row
             [ Font.italic
-            , Font.color Colors.shadowedSteel
+            , Font.color Design.Colors.primary
             , Font.size 18
             , centerX
             , alpha 0.8
             ]
-            [ text "is already in your 🛒" ]
+            [ text "in your 🛒" ]
 
     else
         row
             [ centerX
             ]
             [ Input.button
-                [ Font.color Colors.balticSea
+                [ Font.color Design.Colors.primary
                 , padding 8
-                , Border.color Colors.balticSea
+                , Background.color Design.Colors.secondary
                 , Border.solid
                 , Border.width 2
                 , Border.rounded 5
                 , mouseOver
-                    [ Font.color Colors.radiantYellow
-                    , Border.color Colors.radiantYellow
+                    [ Background.color (Design.Colors.secondary |> Design.Colors.setAlpha 0)
+                    , Font.color Design.Colors.secondary
+                    , Border.color Design.Colors.secondary
                     ]
                 ]
                 { onPress =
@@ -213,7 +213,7 @@ viewItem item =
     column
         [ width (px 620)
         , height (px 620)
-        , Border.color Colors.balticSea
+        , Border.color Design.Colors.primary
         , Border.solid
         , Border.width 2
         , Border.rounded 5

@@ -166,16 +166,15 @@ view sharedModel model =
         column
             [ width fill
             , height fill
-            , spacing 20
-            , padding 20
+            , spacing 50
             ]
             [ Components.Basket.viewTrail { basketStep = 1 }
             , row [ centerX, spacing 5 ]
                 [ Components.Page.Header.view "BASKET"
                 , viewBasketClearBtn
                 ]
-            , Components.Basket.viewBasketTotal sharedModel.userBasket
             , viewBasketItems sharedModel.userBasket
+            , Components.Basket.viewBasketTotal sharedModel.userBasket
             , Components.Basket.viewBasketProceedBtn { onPress = Just ContinueToStep2, labelText = "Continue" }
             ]
     }
@@ -188,15 +187,16 @@ viewBasketItems userBasket =
             (\{ id, name, price, qty } ->
                 row
                     [ spacing 5
-                    , below <|
-                        el
-                            [ mouseOver [ alpha 1 ]
-                            , alpha 0
-                            , Font.size 14
-                            , Font.color Colors.shadowedSteel
-                            ]
-                        <|
-                            text "The moon icon is purely decorative. You Are Not Purchasing the Earth's Moon!! ☝"
+
+                    -- , below <|
+                    --     el
+                    --         [ mouseOver [ alpha 1 ]
+                    --         , alpha 0
+                    --         , Font.size 14
+                    --         , Font.color Colors.shadowedSteel
+                    --         ]
+                    --     <|
+                    --         text "The moon icon is purely decorative. You Are Not Purchasing the Earth's Moon!! ☝"
                     ]
                     [ row
                         (if qty == 0 then

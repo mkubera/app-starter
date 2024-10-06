@@ -1,9 +1,12 @@
 module Components.Link exposing (..)
 
+import Design.Colors
 import Element exposing (..)
+import Element.Background as Background
 import Element.Font as Font
 import FlatColors.TurkishPalette as Colors
 import Route.Path
+import Element.Border as Border
 
 
 view : { routePath : Route.Path.Path, label : Element msg } -> Element msg
@@ -19,7 +22,10 @@ view { routePath, label } =
             link
                 [ Font.size 14
                 , centerX
-                , Font.color Colors.radiantYellow
+                , Font.color Design.Colors.secondary
+                , Background.color Design.Colors.primary
+                , padding 10
+                , Border.rounded 5
                 ]
                 { url = Route.Path.toString Route.Path.Items
                 , label = label
