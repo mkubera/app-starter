@@ -25,7 +25,11 @@ viewBtn category =
         urlWithQueryParams =
             Route.toString
                 { path = Route.Path.Items
-                , query = Dict.fromList [ ( "categoryId", String.fromInt category.id ) ]
+                , query =
+                    Dict.fromList
+                        [ ( "categoryId", String.fromInt category.id )
+                        , ( "categoryName", category.name )
+                        ]
                 , hash = Nothing
                 }
     in

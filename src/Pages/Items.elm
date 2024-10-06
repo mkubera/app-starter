@@ -30,12 +30,17 @@ page sharedModel route =
                 |> Dict.get "categoryId"
                 |> Maybe.andThen String.toInt
                 |> Maybe.withDefault 0
+
+        categoryName =
+            route.query
+                |> Dict.get "categoryName"
+                |> Maybe.withDefault ""
     in
     Page.new
         { init = init sharedModel
         , update = update
         , subscriptions = subscriptions
-        , view = view sharedModel categoryId
+        , view = view sharedModel categoryId categoryName
         }
         |> Page.withLayout
             (\model ->
@@ -91,16 +96,9 @@ subscriptions model =
 -- VIEW
 
 
-view : Shared.Model.Model -> Int -> Model -> View Msg
-view sharedModel categoryId model =
+view : Shared.Model.Model -> Int -> String -> Model -> View Msg
+view sharedModel categoryId categoryName model =
     let
-        categoryName : String
-        categoryName =
-            List.filter (\c -> c.id == categoryId) sharedModel.categories
-                |> List.head
-                |> Maybe.withDefault Shared.dummyCategory
-                |> .name
-
         itemsOfCategory =
             List.filter (\item -> item.categoryId == categoryId) sharedModel.items
     in

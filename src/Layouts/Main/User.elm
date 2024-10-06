@@ -2,6 +2,7 @@ module Layouts.Main.User exposing (Model, Msg, Props, layout)
 
 import Api.Basket
 import Api.Logout
+import Components.Nav.CategoryBtns
 import Components.NavLink
 import Dict
 import Effect exposing (Effect)
@@ -32,7 +33,7 @@ layout props sharedModel route =
     Layout.new
         { init = init sharedModel
         , update = update sharedModel
-        , view = view
+        , view = view sharedModel
         , subscriptions = subscriptions
         }
         |> Layout.withParentProps {}
@@ -137,21 +138,21 @@ subscriptions model =
 -- VIEW
 
 
-view : { toContentMsg : Msg -> contentMsg, content : View contentMsg, model : Model } -> View contentMsg
-view { toContentMsg, model, content } =
+view : Shared.Model.Model -> { toContentMsg : Msg -> contentMsg, content : View contentMsg, model : Model } -> View contentMsg
+view sharedModel { toContentMsg, model, content } =
     { title = content.title ++ " | App Starter"
     , attributes = []
     , element =
         column [ width fill, height fill ]
-            [ viewNavbar model
+            [ viewNavbar sharedModel model
                 |> Element.map toContentMsg
             , row [ centerX, centerY ] [ content.element ]
             ]
     }
 
 
-viewNavbar : Model -> Element Msg
-viewNavbar model =
+viewNavbar : Shared.Model.Model -> Model -> Element Msg
+viewNavbar sharedModel model =
     row
         [ spaceEvenly
         , Background.color (rgb255 150 150 150)
@@ -160,7 +161,7 @@ viewNavbar model =
         ]
         [ row [] [ Components.NavLink.view Route.Path.Home_ ]
         , row [ spacing 20 ]
-            [ Components.NavLink.view Route.Path.Items
+            [ Components.Nav.CategoryBtns.view sharedModel.categories
             , Components.NavLink.view Route.Path.User_Profile
             , Components.NavLink.view Route.Path.Basket
             , if model.isLoggingOut then
