@@ -1,11 +1,11 @@
 module Components.Basket exposing (..)
 
+import Design.Colors
 import Element exposing (..)
 import Element.Background as Background
 import Element.Border as Border
 import Element.Font as Font
 import Element.Input as Input
-import FlatColors.TurkishPalette as Colors
 import Route.Path
 import Shared.Model
 
@@ -45,7 +45,7 @@ viewTrail { basketStep } =
                     column attributes
                         [ row
                             [ centerX
-                            , Border.color (rgb255 100 100 100)
+                            , Border.color (Design.Colors.primary |> Design.Colors.setAlpha 0.5)
                             , Border.solid
                             , Border.width 1
                             , Border.rounded 100
@@ -63,7 +63,7 @@ viewTrail { basketStep } =
                     ]
                     [ row
                         [ height (px 1)
-                        , Background.color (rgb255 0 0 0)
+                        , Background.color Design.Colors.primary
                         , paddingXY 30 0
                         , alpha 0.33
                         , centerX
@@ -78,7 +78,7 @@ viewBasketProceedBtn : { onPress : Maybe msg, labelText : String } -> Element ms
 viewBasketProceedBtn { onPress, labelText } =
     row
         [ centerX
-        , Background.color Colors.radiantYellow
+        , Background.color Design.Colors.secondary
         , Font.size 18
         , padding 10
         , Border.rounded 5
@@ -91,12 +91,13 @@ viewBasketProceedBtn { onPress, labelText } =
 viewBasketBackBtn : { to : Route.Path.Path } -> Element msg
 viewBasketBackBtn { to } =
     link
-        [ Background.color (rgb255 188 188 188)
+        [ Background.color (Design.Colors.black |> Design.Colors.setAlpha 0.33)
+        , Font.size 18
         , padding 10
         , Border.rounded 5
         ]
         { url = Route.Path.toString to
-        , label = text "back"
+        , label = text "🔙"
         }
 
 
@@ -113,13 +114,13 @@ viewBasketTotal userBasket =
     in
     row
         [ centerX
-        , Font.color Colors.lightIndigo
+        , Font.color Design.Colors.ternary
         , alpha 0.8
         , Font.italic
         , Font.size 18
         , Border.width 1
         , Border.solid
-        , Border.color Colors.lightIndigo
+        , Border.color Design.Colors.ternary
         , padding 10
         ]
         [ text <| "€" ++ totalTxt

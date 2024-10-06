@@ -1,6 +1,7 @@
 module Layouts.Main exposing (Model, Msg, Props, layout)
 
 import Components.Modal as Modal
+import Design.Colors
 import Effect exposing (Effect)
 import Element exposing (..)
 import Element.Background as Background
@@ -103,7 +104,9 @@ subscriptions model =
 view : Shared.Model.Model -> { toContentMsg : Msg -> contentMsg, content : View contentMsg, model : Model } -> View contentMsg
 view sharedModel { toContentMsg, model, content } =
     { title = content.title ++ " | App Starter"
-    , attributes = []
+    , attributes =
+        [ Background.color (Design.Colors.ternary |> Design.Colors.setAlpha 0.22)
+        ]
     , element =
         column
             [ width fill

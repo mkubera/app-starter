@@ -2,6 +2,7 @@ module Pages.BasketStep2 exposing (Model, Msg, page)
 
 import Components.Basket
 import Components.Page.Header
+import Design.Colors
 import Effect exposing (Effect)
 import Element exposing (..)
 import Element.Background as Background
@@ -86,7 +87,7 @@ subscriptions model =
 
 view : Shared.Model.Model -> Model -> View Msg
 view sharedModel model =
-    { title = "Items"
+    { title = "Basket"
     , attributes = []
     , element =
         column
@@ -116,15 +117,15 @@ viewBasketItems userBasket =
             (\{ id, name, price, qty } ->
                 row
                     [ spacing 5
-                    , below <|
-                        el
-                            [ mouseOver [ alpha 1 ]
-                            , alpha 0
-                            , Font.size 14
-                            , Font.color Colors.shadowedSteel
-                            ]
-                        <|
-                            text "The moon icon is purely decorative. You Are Not Purchasing the Earth's Moon!! ☝"
+                    -- , below <|
+                    --     el
+                    --         [ mouseOver [ alpha 1 ]
+                    --         , alpha 0
+                    --         , Font.size 14
+                    --         , Font.color Design.Colors.primary
+                    --         ]
+                    --     <|
+                    --         text "The moon icon is purely decorative. You Are Not Purchasing the Earth's Moon!! ☝"
                     ]
                     [ row
                         (if qty == 0 then

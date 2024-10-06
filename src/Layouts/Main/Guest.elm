@@ -2,6 +2,7 @@ module Layouts.Main.Guest exposing (Model, Msg, Props, layout)
 
 import Components.Nav.CategoryBtns
 import Components.NavLink
+import Design.Colors
 import Dict
 import Effect exposing (Effect)
 import Element exposing (..)
@@ -96,7 +97,7 @@ viewNavbar : Shared.Model.Model -> Element msg
 viewNavbar sharedModel =
     row
         [ spaceEvenly
-        , Background.color (rgb255 150 150 150)
+        , Background.color (Design.Colors.black |> Design.Colors.setAlpha 0.22)
         , width fill
         , padding 20
         ]

@@ -3,6 +3,7 @@ module Pages.Basket exposing (Model, Msg, page)
 import Api.Basket
 import Components.Basket exposing (viewBasketTotal)
 import Components.Page.Header
+import Design.Colors
 import Effect exposing (Effect)
 import Element exposing (..)
 import Element.Background as Background
@@ -223,8 +224,8 @@ viewBasketItems userBasket =
 viewBasketIncrementItemBtn : { id : Int } -> Element Msg
 viewBasketIncrementItemBtn { id } =
     Input.button
-        [ Background.color Colors.brightLilac
-        , Font.color (rgb255 255 255 255)
+        [ Background.color Design.Colors.secondary
+        , Font.color Design.Colors.white
         , width (px 20)
         , height (px 20)
         , Font.center
@@ -236,11 +237,10 @@ viewBasketIncrementItemBtn { id } =
 viewBasketDecrementItemBtn : { id : Int, qty : Int } -> Element Msg
 viewBasketDecrementItemBtn { id, qty } =
     Input.button
-        [ Background.color Colors.redOrange
-        , Font.color (rgb255 255 255 255)
+        [ Background.color Design.Colors.ternary
+        , Font.color Design.Colors.secondary
         , width (px 20)
         , height (px 20)
-        , Font.center
         , Border.rounded 5
         ]
         { onPress =
@@ -249,7 +249,7 @@ viewBasketDecrementItemBtn { id, qty } =
 
             else
                 Nothing
-        , label = text "-"
+        , label = el [ centerX, centerY ] <| text "-"
         }
 
 

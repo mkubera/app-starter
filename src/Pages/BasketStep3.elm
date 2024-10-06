@@ -2,13 +2,13 @@ module Pages.BasketStep3 exposing (Model, Msg, page)
 
 import Components.Basket
 import Components.Page.Header
+import Design.Colors
 import Effect exposing (Effect)
 import Element exposing (..)
 import Element.Background as Background
 import Element.Border as Border
 import Element.Font as Font
 import Element.Input as Input
-import FlatColors.TurkishPalette as Colors
 import Layouts
 import Page exposing (Page)
 import Route exposing (Route)
@@ -101,8 +101,6 @@ view sharedModel model =
                 [ Components.Page.Header.view "BASKET"
                 ]
             , Components.Basket.viewBasketTotal sharedModel.userBasket
-
-            -- , viewBasketItems sharedModel.userBasket
             , row [ centerX, spacing 5 ]
                 [ Components.Basket.viewBasketBackBtn { to = Route.Path.BasketStep2 }
                 , viewBasketPayBtn
@@ -111,45 +109,11 @@ view sharedModel model =
     }
 
 
-
--- viewBasketItems : List Shared.Model.BasketItem -> Element Msg
--- viewBasketItems userBasket =
---     column [ spacing 20 ] <|
---         List.map
---             (\{ id, name, price, qty } ->
---                 row
---                     [ spacing 5
---                     , below <|
---                         el
---                             [ mouseOver [ alpha 1 ]
---                             , alpha 0
---                             , Font.size 14
---                             , Font.color Colors.shadowedSteel
---                             ]
---                         <|
---                             text "The moon icon is purely decorative. You Are Not Purchasing the Earth's Moon!! ☝"
---                     ]
---                     [ row
---                         (if qty == 0 then
---                             [ Font.medium, alpha 0.5 ]
---                          else
---                             [ Font.medium, alpha 1 ]
---                         )
---                         [ el [ Font.bold ] <| text (String.fromInt qty ++ "x")
---                         , text " 🌗 "
---                         , text name
---                         , text (" (€" ++ String.fromFloat price ++ ")")
---                         ]
---                     ]
---             )
---             userBasket
-
-
 viewBasketPayBtn : Element Msg
 viewBasketPayBtn =
     row
         [ centerX
-        , Background.color Colors.radiantYellow
+        , Background.color Design.Colors.secondary
         , Font.size 18
         , padding 10
         , Border.rounded 5
