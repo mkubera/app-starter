@@ -24,11 +24,18 @@ import View exposing (View)
 
 page : Shared.Model -> Route () -> Page Model Msg
 page sharedModel route =
+    let
+        categoryId =
+            route.query
+                |> Dict.get "categoryId"
+                |> Maybe.andThen String.toInt
+                |> Maybe.withDefault 0
+    in
     Page.new
         { init = init sharedModel
         , update = update
         , subscriptions = subscriptions
-        , view = view sharedModel
+        , view = view sharedModel categoryId
         }
         |> Page.withLayout
             (\model ->
@@ -84,9 +91,20 @@ subscriptions model =
 -- VIEW
 
 
-view : Shared.Model.Model -> Model -> View Msg
-view sharedModel model =
-    { title = "Items"
+view : Shared.Model.Model -> Int -> Model -> View Msg
+view sharedModel categoryId model =
+    let
+        categoryName : String
+        categoryName =
+            List.filter (\c -> c.id == categoryId) sharedModel.categories
+                |> List.head
+                |> Maybe.withDefault Shared.dummyCategory
+                |> .name
+
+        itemsOfCategory =
+            List.filter (\item -> item.categoryId == categoryId) sharedModel.items
+    in
+    { title = String.toUpper categoryName
     , attributes = []
     , element =
         column
@@ -95,7 +113,7 @@ view sharedModel model =
             , spacing 20
             , padding 20
             ]
-            [ Components.Page.Header.view "ITEMS"
-            , Components.Items.view { items = sharedModel.items }
+            [ Components.Page.Header.view (String.toUpper categoryName)
+            , Components.Items.view { items = itemsOfCategory }
             ]
     }

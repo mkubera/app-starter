@@ -2,7 +2,7 @@ module Shared exposing
     ( Flags, decoder
     , Model, Msg
     , init, update, subscriptions
-    , dummyItem, dummyUser
+    , dummyCategory, dummyItem, dummyUser
     )
 
 {-|
@@ -37,6 +37,15 @@ dummyItem =
     , name = ""
     , price = 0
     , qty = 0
+    , createdAt = 0
+    }
+
+
+dummyCategory : Shared.Model.Category
+dummyCategory =
+    { id = 0
+    , name = ""
+    , description = ""
     , createdAt = 0
     }
 

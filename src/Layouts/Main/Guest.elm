@@ -1,6 +1,8 @@
 module Layouts.Main.Guest exposing (Model, Msg, Props, layout)
 
+import Components.Nav.CategoryBtns
 import Components.NavLink
+import Dict
 import Effect exposing (Effect)
 import Element exposing (..)
 import Element.Background as Background
@@ -24,6 +26,10 @@ layout :
     -> Route ()
     -> Layout Layouts.Main.Props Model Msg contentMsg
 layout props sharedModel route =
+    let
+        _ =
+            Debug.log "Guest Route" route
+    in
     Layout.new
         { init = init
         , update = update
@@ -96,7 +102,7 @@ viewNavbar sharedModel =
         ]
         [ row [] [ Components.NavLink.view Route.Path.Home_ ]
         , row [ spacing 20 ]
-            [ Components.NavLink.view Route.Path.Items
+            [ Components.Nav.CategoryBtns.view sharedModel.categories
             , Components.NavLink.view Route.Path.Basket
             , Components.NavLink.view Route.Path.Signup
             , Components.NavLink.view Route.Path.Login
