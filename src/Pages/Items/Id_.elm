@@ -159,6 +159,39 @@ view sharedModel itemId model =
     }
 
 
+viewItem : Shared.Model.Item -> Element msg
+viewItem item =
+    column
+        [ width (px 620)
+        , spacingXY 10 10
+        ]
+        [ row
+            [ centerX
+            , centerY
+            ]
+            [ image [ height (px 420) ]
+                { src = "https://i.discogs.com/NtYmZPWZ21Wz9gVhsQzh8M3lXbvkCO1zKcSPbMW5cdo/rs:fit/g:sm/q:90/h:480/w:480/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTExNTgx/NzE0LTE2NTc0MTY1/OTItMzUxMS5qcGVn.jpeg"
+                , description = ""
+                }
+            ]
+        , row [ centerX, centerY, Font.size 26, Font.bold ]
+            [ text item.name
+            ]
+        , row
+            [ centerX
+            , centerY
+            , Font.size 20
+            ]
+            [ text ("€" ++ String.fromFloat item.price) ]
+        , row
+            [ centerX
+            , centerY
+            , Font.size 14
+            ]
+            [ text (String.fromInt item.qty ++ " left") ]
+        ]
+
+
 viewAddToBasket :
     { id : Int
     , userBasket : List Shared.Model.BasketItem
@@ -203,37 +236,6 @@ viewAddToBasket { id, userBasket, isSubmitting } =
 
                     else
                         Just (AddToBasket { itemId = id })
-                , label = text "+basket"
+                , label = text "add to basket"
                 }
             ]
-
-
-viewItem : Shared.Model.Item -> Element msg
-viewItem item =
-    column
-        [ width (px 620)
-        , height (px 620)
-        , Border.color Design.Colors.primary
-        , Border.solid
-        , Border.width 2
-        , Border.rounded 5
-        , centerX
-        , centerY
-        , spacingXY 10 10
-        ]
-        [ row [ centerX, centerY, Font.size 22, Font.bold ]
-            [ text item.name
-            ]
-        , row
-            [ centerX
-            , centerY
-            , Font.size 18
-            ]
-            [ text ("€" ++ String.fromFloat item.price) ]
-        , row
-            [ centerX
-            , centerY
-            , Font.size 14
-            ]
-            [ text (String.fromInt item.qty ++ " left") ]
-        ]

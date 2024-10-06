@@ -36,19 +36,10 @@ view { items } =
                             [ row
                                 [ width (px 200)
                                 , height (px 200)
-
-                                -- , Border.color Design.Colors.primary
-                                -- , Border.solid
-                                -- , Border.width 2
-                                -- , Border.rounded 25
-                                -- , padding 20
                                 , spacing 5
                                 , pointer
                                 , mouseOver
-                                    [ alpha 0.8
-                                    , Border.color Design.Colors.secondary
-                                    , Font.color Design.Colors.secondary
-                                    ]
+                                    [ alpha 0.8 ]
                                 ]
                                 [ image [ width (px 200) ]
                                     { src = "https://i.discogs.com/NtYmZPWZ21Wz9gVhsQzh8M3lXbvkCO1zKcSPbMW5cdo/rs:fit/g:sm/q:90/h:480/w:480/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTExNTgx/NzE0LTE2NTc0MTY1/OTItMzUxMS5qcGVn.jpeg"
