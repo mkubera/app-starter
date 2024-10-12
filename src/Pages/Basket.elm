@@ -210,11 +210,13 @@ view sharedModel model =
 
 viewBasketItems : List Shared.Model.BasketItem -> Element Msg
 viewBasketItems userBasket =
-    column [ spacing 20 ] <|
+    column [ width fill, spacing 20 ] <|
         List.map
             (\{ id, name, price, qty } ->
                 row
-                    [ spacing 5
+                    [ width fill
+                    , centerX
+                    , spacing 5
 
                     -- , below <|
                     --     el
@@ -228,10 +230,10 @@ viewBasketItems userBasket =
                     ]
                     [ row
                         (if qty == 0 then
-                            [ Font.medium, alpha 0.5 ]
+                            [ width fill, Font.medium, alpha 0.5 ]
 
                          else
-                            [ Font.medium, alpha 1 ]
+                            [ width fill, Font.medium, alpha 1 ]
                         )
                         [ el [ Font.bold ] <| text (String.fromInt qty ++ "x")
                         , text " 🌗 "

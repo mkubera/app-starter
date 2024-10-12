@@ -4,6 +4,7 @@ import Api.Basket
 import Components.Link
 import Components.Page.Header
 import Design.Colors
+import Dict
 import Effect exposing (Effect)
 import Element exposing (..)
 import Element.Background as Background
@@ -15,7 +16,7 @@ import Layouts
 import Page exposing (Page)
 import Route exposing (Route)
 import Route.Path
-import Shared exposing (dummyItem)
+import Shared exposing (dummyCategory, dummyItem)
 import Shared.Model
 import Utils
 import View exposing (View)
@@ -132,9 +133,26 @@ view sharedModel itemId model =
         item =
             sharedModel.items
                 |> List.filter (\{ id } -> id == itemId)
-                |> Debug.log "filtered item"
                 |> List.head
                 |> Maybe.withDefault dummyItem
+
+        itemCategory : Shared.Model.Category
+        itemCategory =
+            sharedModel.categories
+                |> List.filter (\{ id } -> id == item.categoryId)
+                |> List.head
+                |> Maybe.withDefault dummyCategory
+
+        urlWithQueryParams =
+            Route.toString
+                { path = Route.Path.Items
+                , query =
+                    Dict.fromList
+                        [ ( "categoryId", String.fromInt itemCategory.id )
+                        , ( "categoryName", itemCategory.name )
+                        ]
+                , hash = Nothing
+                }
     in
     { title = "Items"
     , attributes = []
@@ -145,9 +163,16 @@ view sharedModel itemId model =
             , spacing 20
             , padding 20
             ]
-            [ Components.Link.view
-                { routePath = Route.Path.Items
-                , label = text "<- back to Items"
+            [ link
+                [ Font.size 14
+                , centerX
+                , Font.color Design.Colors.secondary
+                , Background.color Design.Colors.primary
+                , padding 10
+                , Border.rounded 5
+                ]
+                { url = urlWithQueryParams
+                , label = text <| "<- back to " ++ itemCategory.name
                 }
             , viewItem item
             , viewAddToBasket

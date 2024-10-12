@@ -3,8 +3,7 @@ module Components.Nav.CategoryBtns exposing (..)
 import Dict
 import Element exposing (..)
 import Element.Background as Background
-import FlatColors.TurkishPalette as Colors
-import Route exposing (Route)
+import Route
 import Route.Path
 import Shared.Model
 

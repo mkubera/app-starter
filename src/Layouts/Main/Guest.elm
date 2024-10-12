@@ -97,15 +97,17 @@ viewNavbar : Shared.Model.Model -> Element msg
 viewNavbar sharedModel =
     row
         [ spaceEvenly
-        , Background.color (Design.Colors.black |> Design.Colors.setAlpha 0.22)
+        , Background.color (Design.Colors.secondary |> Design.Colors.setAlpha 1)
         , width fill
         , padding 20
         ]
         [ row [] [ Components.NavLink.view Route.Path.Home_ ]
-        , row [ spacing 20 ]
+        , row [ spacing 30 ]
             [ Components.Nav.CategoryBtns.view sharedModel.categories
             , Components.NavLink.view Route.Path.Basket
-            , Components.NavLink.view Route.Path.Signup
-            , Components.NavLink.view Route.Path.Login
+            , row []
+                [ Components.NavLink.view Route.Path.Signup
+                , Components.NavLink.view Route.Path.Login
+                ]
             ]
         ]

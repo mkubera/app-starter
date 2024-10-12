@@ -4,6 +4,7 @@ import Api.Basket
 import Api.Logout
 import Components.Nav.CategoryBtns
 import Components.NavLink
+import Design.Colors
 import Dict
 import Effect exposing (Effect)
 import Element exposing (..)
@@ -155,12 +156,12 @@ viewNavbar : Shared.Model.Model -> Model -> Element Msg
 viewNavbar sharedModel model =
     row
         [ spaceEvenly
-        , Background.color (rgb255 150 150 150)
+        , Background.color (Design.Colors.primary |> Design.Colors.setAlpha 0.33)
         , width fill
         , padding 20
         ]
         [ row [] [ Components.NavLink.view Route.Path.Home_ ]
-        , row [ spacing 20 ]
+        , row [ spacing 30 ]
             [ Components.Nav.CategoryBtns.view sharedModel.categories
             , Components.NavLink.view Route.Path.User_Profile
             , Components.NavLink.view Route.Path.Basket
