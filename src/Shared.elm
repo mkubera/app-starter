@@ -35,6 +35,7 @@ dummyItem =
     { id = 0
     , categoryId = 0
     , name = ""
+    , description = ""
     , price = 0
     , qty = 0
     , createdAt = 0

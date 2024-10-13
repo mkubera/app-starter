@@ -4,6 +4,7 @@ import Api.Basket
 import Components.Basket exposing (viewBasketTotal)
 import Components.Page.Header
 import Design.Colors
+import Design.Typography
 import Effect exposing (Effect, incrementBasketItemQty)
 import Element exposing (..)
 import Element.Background as Background
@@ -184,32 +185,66 @@ view sharedModel model =
             , height fill
             , spacing 50
             ]
-            [ Components.Basket.viewTrail { basketStep = 1 }
-            , row [ centerX, spacing 5 ]
+            [ -- TRAIL
+              Components.Basket.viewTrail { basketStep = 1 }
+
+            -- HEADER + CLEAR BTN
+            , row [ centerX, spacing 20 ]
                 [ Components.Page.Header.view "BASKET"
                 , viewBasketClearBtn
                 ]
+
+            -- ITEMS
             , if isBasketNotEmpty then
                 viewBasketItems sharedModel.userBasket
 
               else
                 row [ centerX, Font.italic ] [ text "Your basket is empty." ]
+
+            -- TOTAL
             , if isBasketNotEmpty then
                 Components.Basket.viewBasketTotal sharedModel.userBasket
 
               else
                 none
+
+            -- PROCEED BTN / LOG-IN INFO
             , if isBasketNotEmpty && isUserLoggedIn then
                 Components.Basket.viewBasketProceedBtn { onPress = Just ContinueToStep2, labelText = "Continue" }
 
               else
-                row [ centerX, Font.italic ] [ text "Log in to proceed to Payment." ]
+                row [ centerX, Font.italic, Font.size 16 ]
+                    [ text "You must be "
+                    , link
+                        [ Background.color Design.Colors.secondary
+                        , mouseOver [ alpha 0.8 ]
+                        ]
+                        { url = "/login", label = text "logged in" }
+                    , text " to purchase your items."
+                    ]
             ]
     }
 
 
 viewBasketItems : List Shared.Model.BasketItem -> Element Msg
 viewBasketItems userBasket =
+    let
+        itemAlpha : Int -> Float
+        itemAlpha qty =
+            if qty == 0 then
+                0.5
+
+            else
+                1
+
+        itemAttributes : Int -> List (Attribute msg)
+        itemAttributes qty =
+            [ width fill
+            , Font.medium
+            , Design.Typography.sizes.basket.item
+            , alpha <| itemAlpha qty
+            ]
+    in
     column [ width fill, spacing 20 ] <|
         List.map
             (\{ id, name, price, qty } ->
@@ -228,13 +263,7 @@ viewBasketItems userBasket =
                     --     <|
                     --         text "The moon icon is purely decorative. You Are Not Purchasing the Earth's Moon!! ☝"
                     ]
-                    [ row
-                        (if qty == 0 then
-                            [ width fill, Font.medium, alpha 0.5 ]
-
-                         else
-                            [ width fill, Font.medium, alpha 1 ]
-                        )
+                    [ row (itemAttributes qty)
                         [ el [ Font.bold ] <| text (String.fromInt qty ++ "x")
                         , text " 🌗 "
                         , text name
@@ -255,23 +284,34 @@ viewBasketIncrementItemBtn : { id : Int } -> Element Msg
 viewBasketIncrementItemBtn { id } =
     Input.button
         [ Background.color Design.Colors.secondary
+        , Design.Typography.sizes.basket.buttons
         , Font.color Design.Colors.white
-        , width (px 20)
-        , height (px 20)
-        , Font.center
+        , Font.bold
+        , width (px 22)
+        , height (px 22)
         , Border.rounded 5
+        , mouseOver
+            [ Background.color (Design.Colors.setAlpha 0.65 Design.Colors.secondary)
+            ]
         ]
-        { onPress = Just (IncrementItem { id = id }), label = text "+" }
+        { onPress = Just (IncrementItem { id = id })
+        , label = el [ centerX, centerY ] <| text "+"
+        }
 
 
 viewBasketDecrementItemBtn : { id : Int, qty : Int } -> Element Msg
 viewBasketDecrementItemBtn { id, qty } =
     Input.button
         [ Background.color Design.Colors.ternary
+        , Design.Typography.sizes.basket.buttons
         , Font.color Design.Colors.secondary
-        , width (px 20)
-        , height (px 20)
+        , Font.bold
+        , width (px 22)
+        , height (px 22)
         , Border.rounded 5
+        , mouseOver
+            [ Background.color (Design.Colors.setAlpha 0.7 Design.Colors.ternary)
+            ]
         ]
         { onPress =
             if qty > 0 then
@@ -287,12 +327,18 @@ viewBasketClearBtn : Element Msg
 viewBasketClearBtn =
     row
         [ centerX
-        , Background.color Colors.radiantYellow
-        , alpha 0.8
+        , centerY
+        , Background.color (Design.Colors.setAlpha 0.75 Design.Colors.ternary)
         , Font.size 15
         , padding 8
         , Border.rounded 5
+        , pointer
+        , mouseOver
+            [ Background.color (Design.Colors.setAlpha 0.5 Design.Colors.ternary)
+            ]
         ]
         [ Input.button []
-            { onPress = Just ClearBasket, label = text "🌑" }
+            { onPress = Just ClearBasket
+            , label = text "🌑"
+            }
         ]

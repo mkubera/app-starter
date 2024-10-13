@@ -8,6 +8,8 @@ own file, so they can be imported by `Effect.elm`
 
 -}
 
+import Element.Region exposing (description)
+
 
 type alias User =
     { id : Int
@@ -27,6 +29,7 @@ type alias Item =
     { id : Int
     , categoryId : Int
     , name : String
+    , description : String
     , price : Float
     , qty : Int
     , createdAt : Int

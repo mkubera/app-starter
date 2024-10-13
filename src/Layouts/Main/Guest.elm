@@ -105,8 +105,9 @@ viewNavbar sharedModel =
         , row [ spacing 30 ]
             [ Components.Nav.CategoryBtns.view sharedModel.categories
             , Components.NavLink.view Route.Path.Basket
-            , row []
+            , row [ spacing 5 ]
                 [ Components.NavLink.view Route.Path.Signup
+                , text "/"
                 , Components.NavLink.view Route.Path.Login
                 ]
             ]

@@ -4,6 +4,7 @@ import Api.Basket
 import Components.Link
 import Components.Page.Header
 import Design.Colors
+import Design.Typography
 import Dict
 import Effect exposing (Effect)
 import Element exposing (..)
@@ -174,23 +175,19 @@ view sharedModel itemId model =
                 { url = urlWithQueryParams
                 , label = text <| "<- back to " ++ itemCategory.name
                 }
-            , viewItem item
-            , viewAddToBasket
-                { id = item.id
-                , userBasket = sharedModel.userBasket
-                , isSubmitting = model.isSubmitting
-                }
+            , viewItem item sharedModel.userBasket model.isSubmitting
             ]
     }
 
 
-viewItem : Shared.Model.Item -> Element msg
-viewItem item =
+viewItem : Shared.Model.Item -> List Shared.Model.UserItem -> Bool -> Element Msg
+viewItem item userBasket isSubmitting =
     column
         [ width (px 620)
         , spacingXY 10 10
         ]
-        [ row
+        [ -- IMAGE
+          row
             [ centerX
             , centerY
             ]
@@ -199,21 +196,49 @@ viewItem item =
                 , description = ""
                 }
             ]
-        , row [ centerX, centerY, Font.size 26, Font.bold ]
-            [ text item.name
-            ]
+
+        -- PRICE
         , row
             [ centerX
             , centerY
-            , Font.size 20
+            , Design.Typography.sizes.itemId.description
             ]
             [ text ("€" ++ String.fromFloat item.price) ]
+
+        -- NAME
+        , row [ centerX, centerY, Design.Typography.sizes.itemId.name, Font.bold ]
+            [ text item.name
+            ]
+
+        -- QTY
         , row
             [ centerX
             , centerY
             , Font.size 14
             ]
             [ text (String.fromInt item.qty ++ " left") ]
+
+        -- DESCRIPTION
+        , paragraph
+            [ centerX
+            , centerY
+            , Design.Typography.sizes.itemId.description
+            , Design.Typography.fonts.secondary
+            ]
+            [ text item.description
+            ]
+        , column
+            [ paddingXY 0 20
+            , spacing 10
+            , width fill
+            ]
+            [ -- ADD TO BASKET BTN
+              viewAddToBasket
+                { id = item.id
+                , userBasket = userBasket
+                , isSubmitting = isSubmitting
+                }
+            ]
         ]
 
 

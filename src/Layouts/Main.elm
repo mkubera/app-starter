@@ -2,9 +2,11 @@ module Layouts.Main exposing (Model, Msg, Props, layout)
 
 import Components.Modal as Modal
 import Design.Colors
+import Design.Typography
 import Effect exposing (Effect)
 import Element exposing (..)
 import Element.Background as Background
+import Element.Font as Font
 import Element.Input as Input exposing (button)
 import FlatColors.TurkishPalette as Colors
 import Layout exposing (Layout)
@@ -106,6 +108,7 @@ view sharedModel { toContentMsg, model, content } =
     { title = content.title ++ " | App Starter"
     , attributes =
         [ Background.color (Design.Colors.ternary |> Design.Colors.setAlpha 0.22)
+        , Design.Typography.fonts.primary
         ]
     , element =
         column

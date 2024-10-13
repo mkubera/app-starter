@@ -19,11 +19,12 @@ responseDecoder =
 
 itemDecoder : D.Decoder Shared.Model.Item
 itemDecoder =
-    D.map6
+    D.map7
         Shared.Model.Item
         (D.field "id" D.int)
         (D.field "categoryId" D.int)
         (D.field "name" D.string)
+        (D.field "description" D.string)
         (D.field "price" D.float)
         (D.field "qty" D.int)
         (D.field "createdAt" D.int)

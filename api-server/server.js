@@ -36,6 +36,8 @@ const initItem = (id, categoryId, name) => ({
   id,
   categoryId,
   name,
+  description:
+    "Lorem ipsum dolor sit amet consectetur adipisicing elit. Eum maxime, saepe sed nemo accusantium quo optio sint neque fugiat! Sed qui quod ea iste quam illum sapiente hic in magni!",
   price: 5.55,
   qty: 12,
   createdAt: Date.now(),

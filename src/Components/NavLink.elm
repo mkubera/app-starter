@@ -1,5 +1,6 @@
 module Components.NavLink exposing (..)
 
+import Design.Typography
 import Element exposing (..)
 import Element.Events as Events
 import Element.Font as Font
@@ -14,10 +15,17 @@ view routePath =
         defaultAttributes =
             [ mouseOver [ alpha 0.5 ]
             ]
+
+        attributesHome_ =
+            defaultAttributes
+                ++ [ Design.Typography.fonts.logo
+                   , Font.regular
+                   , Font.letterSpacing 2
+                   ]
     in
     case routePath of
         Home_ ->
-            link defaultAttributes
+            link attributesHome_
                 { url = Route.Path.toString Route.Path.Home_
                 , label = text "App Starter logo"
                 }

@@ -1,6 +1,7 @@
 module Components.Basket exposing (..)
 
 import Design.Colors
+import Design.Typography
 import Element exposing (..)
 import Element.Background as Background
 import Element.Border as Border
@@ -124,6 +125,14 @@ viewBasketTotal userBasket =
         , padding 10
         , spacing 5
         ]
-        [ row [ centerX, Font.size 14 ] [ text "total" ]
-        , row [ centerX, Font.size 18 ] [ text <| "€" ++ Utils.setDecimal sumOfItems 2 ]
+        [ row
+            [ centerX
+            , Font.size 18
+            ]
+            [ text "total" ]
+        , row
+            [ centerX
+            , Design.Typography.sizes.basket.total
+            ]
+            [ text <| "€" ++ Utils.setDecimal sumOfItems 2 ]
         ]
