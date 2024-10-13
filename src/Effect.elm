@@ -6,7 +6,7 @@ module Effect exposing
     , pushRoutePath, replaceRoutePath
     , loadExternalUrl, back
     , map, toCmd
-    , addToBasket, clearBasket, clearErrorNotification, clearSuccessNotification, decrementBasketItemQty, getBasket, incrementBasketItemQty, login, logout, saveCategories, saveErrorNotification, saveItems, saveSuccessNotification, toggleModal, updateUser
+    , addToBasket, clearBasket, clearErrorNotification, clearNotificationsAfterSleep, clearSuccessNotification, decrementBasketItemQty, getBasket, incrementBasketItemQty, login, logout, saveCategories, saveErrorNotification, saveItems, saveSuccessNotification, toggleModal, updateUser
     )
 
 {-|
@@ -26,6 +26,7 @@ module Effect exposing
 
 import Browser.Navigation
 import Dict exposing (Dict)
+import Process
 import Route exposing (Route)
 import Route.Path
 import Shared.Model
@@ -50,6 +51,25 @@ type Effect msg
 
 
 -- ADDED
+
+
+clearNotificationsAfterSleep : { seconds : Int } -> Effect Shared.Msg.Msg
+clearNotificationsAfterSleep { seconds } =
+    let
+        clearSuccessNotificationCmd : Cmd Shared.Msg.Msg
+        clearSuccessNotificationCmd =
+            Process.sleep (toFloat (seconds * 1000))
+                |> Task.perform (\_ -> Shared.Msg.ClearSuccessNotification)
+
+        clearErrorNotificationCmd : Cmd Shared.Msg.Msg
+        clearErrorNotificationCmd =
+            Process.sleep (toFloat (seconds * 1000))
+                |> Task.perform (\_ -> Shared.Msg.ClearErrorNotification)
+    in
+    batch
+        [ SendCmd clearSuccessNotificationCmd
+        , SendCmd clearErrorNotificationCmd
+        ]
 
 
 toggleModal : { modal : Maybe Shared.Model.Modal } -> Effect msg

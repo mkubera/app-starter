@@ -241,8 +241,7 @@ update route msg model =
                 | user = Just user
               }
             , Effect.batch
-                [ Effect.clearErrorNotification
-                , Effect.saveSuccessNotification
+                [ Effect.saveSuccessNotification
                     { successString = "Profile update successful! 👌" }
                 ]
             )
@@ -273,12 +272,15 @@ update route msg model =
 
         Shared.Msg.SaveSuccessNotification string ->
             ( { model | successNotification = Just string }
-            , Effect.none
+            , Effect.batch
+                [ Effect.clearNotificationsAfterSleep { seconds = 5 }
+                ]
             )
 
         Shared.Msg.ClearSuccessNotification ->
             ( { model | successNotification = Nothing }
-            , Effect.none
+            , Effect.batch
+                []
             )
 
         Shared.Msg.SaveErrorNotification string ->
